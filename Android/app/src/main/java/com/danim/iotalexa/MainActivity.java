@@ -60,10 +60,6 @@ public class MainActivity extends AppCompatActivity
     {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        TextView textView = findViewById(R.id.toolbar_title);
-
-        textView.setTypeface(TypeFaceSingleton.getTypeFace(this, Constants.TYPE_FACE));
     }
 
     /**
