@@ -7,7 +7,7 @@ import java.util.Hashtable;
 
 /**
  * Class to create one font instance.
- * Created by Daniel Mancebo Aldea on 14/10/2016.
+ * Created by Daniel Mancebo Aldea on 25/08/2018.
  */
 
 public class TypeFaceSingleton
