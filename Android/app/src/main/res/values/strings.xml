@@ -5,4 +5,9 @@
     <string name="living_room">Living Room</string>
 
     <string name="temperature">Temperature</string>
+
+    <string name="currently">Currently</string>
+    <string name="currently_temperature">23</string>
+    <string name="currently_temperature_o">o</string>
+    <string name="currently_status">Mostly cloudy</string>
 </resources>

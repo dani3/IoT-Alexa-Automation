@@ -16,23 +16,11 @@ import android.widget.TextView;
 
 import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.PermissionsHelper;
-import com.danim.iotalexa.Singletons.TypeFaceSingleton;
+import com.danim.iotalexa.Helpers.WeatherHelper;
 
 public class MainActivity extends AppCompatActivity
 {
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -43,6 +31,9 @@ public class MainActivity extends AppCompatActivity
 
         _initToolbar();
         _requestPermissions();
+
+        WeatherHelper.loadForecastInfo(
+                this, Constants.ACCUWEATHER_CITY, (TextView) findViewById(R.id.currently_temperature), (TextView) findViewById(R.id.currently_status));
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.

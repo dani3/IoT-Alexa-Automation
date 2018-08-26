@@ -29,20 +29,64 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".3">
+            android:layout_weight=".25"
+            android:layout_marginBottom="38dp"
+            android:gravity="bottom">
 
+            <TextView
+                android:id="@+id/currently"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/caviar_dreams"
+                android:padding="8dp"
+                android:layout_marginLeft="38dp"
+                android:text="@string/currently"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
 
+            <TextView
+                android:id="@+id/currently_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/currently"
+                android:fontFamily="@font/caviar_dreams"
+                android:text="@string/currently_temperature"
+                android:textSize="48sp"
+                android:textColor="@android:color/white"/>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/currently_temperature_o"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/currently_temperature"
+                android:layout_marginLeft="4dp"
+                android:fontFamily="@font/caviar_dreams"
+                android:text="@string/currently_temperature_o"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"/>
+
+            <TextView
+                android:id="@+id/currently_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/currently_temperature_o"
+                android:layout_alignBottom="@id/currently_temperature"
+                android:fontFamily="@font/caviar_dreams"
+                android:text="@string/currently_status"
+                android:padding="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"/>
+
+        </RelativeLayout>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".7"
+            android:layout_weight=".75"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </LinearLayout>
