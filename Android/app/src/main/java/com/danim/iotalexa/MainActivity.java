@@ -2,6 +2,7 @@ package com.danim.iotalexa;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.danim.iotalexa.Constants.Constants;
+import com.danim.iotalexa.Helpers.PermissionsHelper;
 import com.danim.iotalexa.Singletons.TypeFaceSingleton;
 
 public class MainActivity extends AppCompatActivity
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         _initToolbar();
+        _requestPermissions();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -61,6 +64,17 @@ public class MainActivity extends AppCompatActivity
         TextView textView = findViewById(R.id.toolbar_title);
 
         textView.setTypeface(TypeFaceSingleton.getTypeFace(this, Constants.TYPE_FACE));
+    }
+
+    /**
+     * Function to request permissions if needed.
+     */
+    void _requestPermissions()
+    {
+        if (!PermissionsHelper.hasPermissions(this, Constants.PERMISSIONS))
+        {
+            ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, Constants.PERMISSION_ALL);
+        }
     }
 
     /**
