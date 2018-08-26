@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">IoT Alexa</string>
-    <string name="section_format">Hello World from section: %1$d</string>
 
     <string name="living_room">Living Room</string>
 
