@@ -12,8 +12,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.PermissionsHelper;
 import com.danim.iotalexa.Helpers.WeatherHelper;
@@ -31,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 
         _initToolbar();
         _requestPermissions();
+        _startAnimations();
 
         WeatherHelper.loadForecastInfo(
                 this, Constants.ACCUWEATHER_CITY, (TextView) findViewById(R.id.currently_temperature), (TextView) findViewById(R.id.currently_status));
@@ -40,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
+        mViewPager = findViewById(R.id.view_pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
@@ -62,6 +69,22 @@ public class MainActivity extends AppCompatActivity
         {
             ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, Constants.PERMISSION_ALL);
         }
+    }
+
+    /**
+     * Function to start the animations when entering the App.
+     */
+    void _startAnimations()
+    {
+        findViewById(R.id.toolbar_title).startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.slide_from_top));
+
+        findViewById(R.id.weather_container).startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom));
+
+        Animation fromBotton = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);
+        fromBotton.setStartOffset(75);
+        findViewById(R.id.view_pager).startAnimation(fromBotton);
     }
 
     /**
