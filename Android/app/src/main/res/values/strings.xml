@@ -5,6 +5,10 @@
 
     <string name="temperature">Temperature</string>
     <string name="temperature_status">Cool</string>
+    <string name="humidity">Humidity</string>
+    <string name="humidity_status">Confortable</string>
+    <string name="humidity_value">18</string>
+    <string name="humidity_value_pct">%</string>
 
     <string name="currently">Currently</string>
     <string name="currently_temperature">23.5</string>
