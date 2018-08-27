@@ -38,26 +38,28 @@
 
             <!-- Temperature -->
             <android.support.v7.widget.CardView
+                android:id="@+id/living_room_temperature_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".5"
                 android:layout_marginBottom="8dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="4dp">
+                app:cardCornerRadius="8dp">
 
                 <include layout="@layout/temperature"/>
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/living_room_tbd1_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".5"
                 android:layout_marginTop="8dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="4dp">
+                app:cardCornerRadius="8dp">
 
             </android.support.v7.widget.CardView>
 
@@ -72,27 +74,30 @@
             android:layout_marginLeft="8dp"
             android:weightSum="1">
 
+            <!-- Humidity -->
             <android.support.v7.widget.CardView
+                android:id="@+id/living_room_humidity_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".5"
                 android:layout_marginBottom="8dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="4dp">
+                app:cardCornerRadius="8dp">
 
                 <include layout="@layout/humidity"/>
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/living_room_tbd2_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".5"
                 android:layout_marginTop="8dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="4dp">
+                app:cardCornerRadius="8dp">
 
             </android.support.v7.widget.CardView>
 
