@@ -1,7 +1,7 @@
 package com.danim.iotalexa;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,23 +9,22 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
+import com.danim.iotalexa.Beans.LivingRoomStatus;
 import com.danim.iotalexa.Constants.Constants;
+import com.danim.iotalexa.Fragments.LivingRoomFragment;
 import com.danim.iotalexa.Helpers.PermissionsHelper;
 import com.danim.iotalexa.Helpers.WeatherHelper;
 
+@SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity
 {
+    /* Data */
+    private LivingRoomStatus mLivingRoomStatus;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -35,13 +34,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        _initViews();
         _initToolbar();
         _requestPermissions();
         _startAnimations();
 
         WeatherHelper.loadForecastInfo(
                 this, Constants.ACCUWEATHER_CITY, (TextView) findViewById(R.id.currently_temperature), (TextView) findViewById(R.id.currently_status));
+    }
 
+    /**
+     * Function that initializes the relevant views.
+     */
+    void _initViews()
+    {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -88,29 +94,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment
-    {
-        public PlaceholderFragment() {}
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber)
-        {
-            return new PlaceholderFragment();
-        }
-
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-        {
-            return inflater.inflate(R.layout.fragment_main, container, false);
-        }
-    }
-
-    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
@@ -126,7 +109,7 @@ public class MainActivity extends AppCompatActivity
         {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return LivingRoomFragment.newInstance();
         }
 
         @Override
