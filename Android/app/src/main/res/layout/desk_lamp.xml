@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@null">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/desk_lamp"
+        android:textSize="12sp"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/caviar_dreams"/>
+
+    <ImageView
+        android:id="@+id/living_room_desk_lamp_image"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:src="@drawable/lamp"/>
+
+    <ProgressBar
+        android:id="@+id/living_room_desk_lamp_progress"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_marginTop="4dp"
+        android:progress="100"
+        style="?android:progressBarStyleHorizontal"/>
+
+</android.support.v7.widget.LinearLayoutCompat>
