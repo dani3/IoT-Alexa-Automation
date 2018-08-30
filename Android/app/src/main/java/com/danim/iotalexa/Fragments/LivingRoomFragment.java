@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.danim.iotalexa.Beans.LivingRoomStatus;
+import com.danim.iotalexa.Helpers.Utils;
 import com.danim.iotalexa.R;
 
 import java.util.Locale;
@@ -31,11 +32,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 {
     private LivingRoomStatus mLivingRoomStatus;
 
-    private View mDeskLampContainer;
-
     private TextView mTemperatureTextView;
+    private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
     private ImageView mDeskLampImageView;
+    private ProgressBar mTemperatureProgressBar;
     private ProgressBar mDeskLampProgressBar;
 
     public LivingRoomFragment() {}
@@ -54,16 +55,18 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mDeskLampContainer   = fragment.findViewById(R.id.living_room_desk_lamp_container);
+        View deskLampContainer = fragment.findViewById(R.id.living_room_desk_lamp_container);
 
-        mTemperatureTextView = fragment.findViewById(R.id.living_room_temperature);
-        mHumidityTextView    = fragment.findViewById(R.id.living_room_humidity);
-        mDeskLampImageView   = fragment.findViewById(R.id.living_room_desk_lamp_image);
-        mDeskLampProgressBar = fragment.findViewById(R.id.living_room_desk_lamp_progress);
+        mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
+        mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
+        mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
+        mDeskLampImageView        = fragment.findViewById(R.id.living_room_desk_lamp_image);
+        mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
+        mDeskLampProgressBar      = fragment.findViewById(R.id.living_room_desk_lamp_progress);
 
         mDeskLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
 
-        mDeskLampContainer.setOnClickListener(new View.OnClickListener()
+        deskLampContainer.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -102,8 +105,13 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         {
             mTemperatureTextView.setText(String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
             mHumidityTextView.setText(Integer.toString(mLivingRoomStatus.getHumidity()));
+            mTemperatureStateTextView.setText(Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
+            mTemperatureProgressBar.setProgress(Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
+
+            mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
 
             _convertImageBW(!mLivingRoomStatus.isDeskLampOn());
+            mDeskLampProgressBar.setProgress((mLivingRoomStatus.isDeskLampOn()) ? 100 : 0, true);
         }
     }
 

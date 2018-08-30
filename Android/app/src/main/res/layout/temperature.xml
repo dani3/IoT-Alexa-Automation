@@ -42,7 +42,7 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/living_room_temperature_status"
+        android:id="@+id/living_room_temperature_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -52,6 +52,7 @@
         android:fontFamily="@font/caviar_dreams"/>
 
     <ProgressBar
+        android:id="@+id/living_room_temperature_progress"
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:progress="30"

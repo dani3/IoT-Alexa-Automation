@@ -17,4 +17,32 @@ public class Constants
 
     public static final int PERMISSION_ALL = 1;
     public static final String[] PERMISSIONS = { Manifest.permission.INTERNET };
+
+    public enum TEMPERATURE_STATES
+    {
+          STRING_COLD("COLD")
+        , STRING_CHILLY("CHILLY")
+        , STRING_COOL("COOL")
+        , STRING_MILD("MILD")
+        , STRING_WARM("WARM")
+        , STRING_HOT("HOT");
+
+        private final String state;
+
+        TEMPERATURE_STATES(final String state)
+        {
+            this.state = state;
+        }
+
+        @Override
+        public String toString()
+        {
+            return state;
+        }
+
+        public String get()
+        {
+            return state;
+        }
+    }
 }
