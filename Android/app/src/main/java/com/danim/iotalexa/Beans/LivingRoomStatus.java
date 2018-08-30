@@ -13,33 +13,33 @@ public class LivingRoomStatus
         mDeskLamp    = deskLamp;
     }
 
-    public float getmTemperature()
+    public float getTemperature()
     {
         return mTemperature;
     }
 
-    public void setmTemperature(float mTemperature)
+    public void setTemperature(float temperature)
     {
-        this.mTemperature = mTemperature;
+        this.mTemperature = temperature;
     }
 
-    public int getmHumidity()
+    public int getHumidity()
     {
         return mHumidity;
     }
 
-    public void setmHumidity(int mHumidity)
+    public void setHumidity(int humidity)
     {
-        this.mHumidity = mHumidity;
+        this.mHumidity = humidity;
     }
 
-    public boolean ismDeskLamp()
+    public boolean isDeskLampOn()
     {
         return mDeskLamp;
     }
 
-    public void setmDeskLamp(boolean mDeskLamp)
+    public void setDeskLamp(boolean deskLamp)
     {
-        this.mDeskLamp = mDeskLamp;
+        this.mDeskLamp = deskLamp;
     }
 }
