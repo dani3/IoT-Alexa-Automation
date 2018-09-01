@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@null">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/temperature"
+        android:textSize="12sp"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/caviar_dreams"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/living_room_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="@string/currently_temperature"
+            android:textSize="38sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/caviar_dreams"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_toRightOf="@id/living_room_temperature"
+            android:text="@string/currently_temperature_o"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/caviar_dreams"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/living_room_temperature_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/temperature_status"
+        android:textSize="12sp"
+        android:textColor="#53E6FA"
+        android:fontFamily="@font/caviar_dreams"/>
+
+    <ProgressBar
+        android:id="@+id/living_room_temperature_progress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:progress="30"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:progressDrawable="@drawable/temperature_bar"
+        style="?android:progressBarStyleHorizontal"/>
+
+</android.support.v7.widget.LinearLayoutCompat>
