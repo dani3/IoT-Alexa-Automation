@@ -85,7 +85,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        // TODO initialize views
         new RetrieveData().execute();
     }
 
@@ -94,7 +93,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         @Override
         protected Void doInBackground(Void... voids)
         {
-            mLivingRoomStatus = new LivingRoomStatus(22.5f, 17, false);
+            mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false);
 
             return null;
         }
@@ -129,11 +128,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
 
         ScaleAnimation scaleUp = new ScaleAnimation(
-                1.f, 1.1f, 1.0f, 1.1f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
+                1.f, 1.05f, 1.f, 1.05f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
         scaleUp.setDuration(75);
 
         ScaleAnimation scaleDown = new ScaleAnimation(
-                1.1f, 1.f, 1.1f, 1.f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
+                1.05f, 1.f, 1.05f, 1.f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
         scaleDown.setDuration(75);
         scaleDown.setStartOffset(75);
 
@@ -152,7 +151,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private void _convertImageBW(boolean bw)
     {
         ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation((bw) ? 0 : 5);
+        matrix.setSaturation((bw) ? 0 : 1);
 
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
         mDeskLampImageView.setColorFilter(filter);
