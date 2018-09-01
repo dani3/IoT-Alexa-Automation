@@ -36,8 +36,10 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
     private ImageView mDeskLampImageView;
+    private ImageView mFootLampImageView;
     private ProgressBar mTemperatureProgressBar;
     private ProgressBar mDeskLampProgressBar;
+    private ProgressBar mFootLampProgressBar;
 
     public LivingRoomFragment() {}
 
@@ -56,15 +58,19 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
         View deskLampContainer = fragment.findViewById(R.id.living_room_desk_lamp_container);
+        View footLampContainer = fragment.findViewById(R.id.living_room_foot_lamp_container);
 
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
         mDeskLampImageView        = fragment.findViewById(R.id.living_room_desk_lamp_image);
+        mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
         mDeskLampProgressBar      = fragment.findViewById(R.id.living_room_desk_lamp_progress);
+        mFootLampProgressBar      = fragment.findViewById(R.id.living_room_foot_lamp_progress);
 
         mDeskLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+        mFootLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
 
         deskLampContainer.setOnClickListener(new View.OnClickListener()
         {
@@ -73,7 +79,18 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 mLivingRoomStatus.setDeskLamp(!mLivingRoomStatus.isDeskLampOn());
 
-                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn());
+                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar);
+            }
+        });
+
+        footLampContainer.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
+
+                _turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar);
             }
         });
 
@@ -93,7 +110,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         @Override
         protected Void doInBackground(Void... voids)
         {
-            mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false);
+            mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false, false);
 
             return null;
         }
@@ -109,8 +126,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
             mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
 
-            _convertImageBW(!mLivingRoomStatus.isDeskLampOn());
+            _convertImageBW(!mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView);
             mDeskLampProgressBar.setProgress((mLivingRoomStatus.isDeskLampOn()) ? 100 : 0, true);
+
+            _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
+            mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, true);
         }
     }
 
@@ -118,11 +138,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
      * Function to control the desk lamp
      * @param on: switch on and off.
      */
-    private void _turnOnOffLamp(boolean on)
+    private void _turnOnOffLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
     {
-        _convertImageBW(!on);
+        _convertImageBW(!on, lamp);
 
-        mDeskLampProgressBar.setProgress((on) ? 100 : 0, true);
+        lampProgress.setProgress((on) ? 100 : 0, true);
 
         AnimationSet animationSet = new AnimationSet(true);
         animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -141,19 +161,19 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         animationSet.addAnimation(scaleUp);
         animationSet.addAnimation(scaleDown);
 
-        mDeskLampImageView.startAnimation(animationSet);
+        lamp.startAnimation(animationSet);
     }
 
     /**
      * Function to convert an image to BW or color.
      * @param bw: black and white or color.
      */
-    private void _convertImageBW(boolean bw)
+    private void _convertImageBW(boolean bw, ImageView lamp)
     {
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation((bw) ? 0 : 1);
 
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        mDeskLampImageView.setColorFilter(filter);
+        lamp.setColorFilter(filter);
     }
 }

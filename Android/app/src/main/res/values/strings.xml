@@ -10,6 +10,7 @@
     <string name="humidity_value">18</string>
     <string name="humidity_value_pct">%</string>
     <string name="desk_lamp">Desk lamp</string>
+    <string name="foot_lamp">Foot lamp</string>
 
     <string name="currently">Currently</string>
     <string name="currently_temperature">23.5</string>

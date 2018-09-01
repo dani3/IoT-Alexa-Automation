@@ -5,12 +5,14 @@ public class LivingRoomStatus
     private float mTemperature;
     private int mHumidity;
     private boolean mDeskLamp;
+    private boolean mFootLamp;
 
-    public LivingRoomStatus(float temperature, int humidity, boolean deskLamp)
+    public LivingRoomStatus(float temperature, int humidity, boolean deskLamp, boolean footLamp)
     {
         mTemperature = temperature;
         mHumidity    = humidity;
         mDeskLamp    = deskLamp;
+        mFootLamp    = footLamp;
     }
 
     public float getTemperature()
@@ -41,5 +43,15 @@ public class LivingRoomStatus
     public void setDeskLamp(boolean deskLamp)
     {
         this.mDeskLamp = deskLamp;
+    }
+
+    public boolean isFootLampOn()
+    {
+        return mFootLamp;
+    }
+
+    public void setFootLamp(boolean footLamp)
+    {
+        this.mFootLamp = footLamp;
     }
 }
