@@ -6,7 +6,7 @@
     <string name="temperature">Temperature</string>
     <string name="temperature_status">Cool</string>
     <string name="humidity">Humidity</string>
-    <string name="humidity_status">Confortable</string>
+    <string name="humidity_status">Comfortable</string>
     <string name="humidity_value">18</string>
     <string name="humidity_value_pct">%</string>
     <string name="desk_lamp">Desk lamp</string>
