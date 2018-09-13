@@ -6,8 +6,6 @@ public class Constants
 {
     public static final String TAG = "IoT Alexa";
 
-    public static final String TYPE_FACE = "CaviarDreams.ttf";
-
     public static final int REQUEST_TIMEOUT = 5000;
 
     public static final String ACCUWEATHER_API_GET_LOCATION_KEY = "http://dataservice.accuweather.com/locations/v1/cities/search?apikey=?1&q=?2";
@@ -17,6 +15,11 @@ public class Constants
 
     public static final int PERMISSION_ALL = 1;
     public static final String[] PERMISSIONS = { Manifest.permission.INTERNET };
+
+    public static final String LIVING_ROOM_DESK_LAMP_IP = "192.168.1.11";
+
+    public static final String LIGHT_ON  = "/lightOn";
+    public static final String LIGHT_OFF = "/lightOff";
 
     public enum TEMPERATURE_STATES
     {
