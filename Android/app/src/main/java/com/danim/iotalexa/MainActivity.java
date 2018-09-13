@@ -13,7 +13,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.danim.iotalexa.Beans.LivingRoomStatus;
 import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Fragments.LivingRoomFragment;
 import com.danim.iotalexa.Helpers.PermissionsHelper;
@@ -22,12 +21,6 @@ import com.danim.iotalexa.Helpers.WeatherHelper;
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity
 {
-    /* Data */
-    private LivingRoomStatus mLivingRoomStatus;
-
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -50,10 +43,10 @@ public class MainActivity extends AppCompatActivity
     {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.view_pager);
+        ViewPager mViewPager = findViewById(R.id.view_pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
