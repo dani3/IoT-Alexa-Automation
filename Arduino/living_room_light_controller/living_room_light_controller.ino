@@ -1,5 +1,6 @@
 // Load Wi-Fi library.
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 
 #define DEBUG
 
@@ -8,7 +9,7 @@ const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
 
 // Set web server port number to 80.
-WiFiServer server(80);
+ESP8266WebServer server(80);
 
 void _quickLEDFlashing()
 {
@@ -37,13 +38,14 @@ void _connectToWiFi()
   Serial.println(SSID);
 #endif
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PWD);
   while (WiFi.status() != WL_CONNECTED)
   {
     digitalWrite(LED_BUILTIN, (_ledOn) ? LOW : HIGH);
     _ledOn = !_ledOn;
 
-    delay(500);   
+    delay(500);
 
 #ifdef DEBUG
     Serial.print(".");
@@ -59,8 +61,33 @@ void _connectToWiFi()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 #endif
+}
+
+void _startHTTPServer()
+{
+  server.on("/lightOn", HTTP_GET, []()
+  {
+#ifdef DEBUG
+    Serial.println("Got Request to switch light on ...\n");
+#endif
+
+    server.send(200, "text/plain", "Done");
+  });
+
+  server.on("/lightOff", HTTP_GET, []()
+  {
+#ifdef DEBUG
+    Serial.println("Got Request to switch light off ...\n");
+#endif
+
+    server.send(200, "text/plain", "Done");
+  });
 
   server.begin();
+
+#ifdef DEBUG
+  Serial.println("HTTP Server started!");
+#endif
 }
 
 void setup()
@@ -73,33 +100,24 @@ void setup()
   digitalWrite(LED_BUILTIN, LOW);
 
   _connectToWiFi();
+  _startHTTPServer();
 }
 
 void loop()
 {
-  if (WiFi.status() != WL_CONNECTED)
+  if (WiFi.status() == WL_CONNECTED)
   {
-    // Listen for incoming clients
-    WiFiClient client = server.available();
-
-    if (client)
-    {
-      String message = "";
-      while (client.connected())
-      {
-        if (client.available())
-        {
-          char c = client.read();
-
-          message += c;
-        }
-      }
-
+    server.handleClient();
+  }
+  else
+  {
 #ifdef DEBUG
-      Serial.println(message);
+    Serial.println("WiFi disconnected");
 #endif
 
-      client.stop();
-    }
+    _connectToWiFi();
+    _startHTTPServer();
   }
+
+  delay(10);
 }
