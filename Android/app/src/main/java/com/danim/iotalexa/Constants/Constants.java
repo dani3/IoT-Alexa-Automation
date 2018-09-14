@@ -16,7 +16,7 @@ public class Constants
     public static final int PERMISSION_ALL = 1;
     public static final String[] PERMISSIONS = { Manifest.permission.INTERNET };
 
-    public static final String LIVING_ROOM_DESK_LAMP_IP = "192.168.1.11";
+    public static final String LIVING_ROOM_DESK_LAMP_IP = "http://192.168.1.11";
 
     public static final String LIGHT_ON  = "/lightOn";
     public static final String LIGHT_OFF = "/lightOff";

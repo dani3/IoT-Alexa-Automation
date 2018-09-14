@@ -8,6 +8,8 @@ import android.graphics.ColorMatrixColorFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +21,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.danim.iotalexa.Beans.LivingRoomStatus;
+import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.Utils;
 import com.danim.iotalexa.R;
+import com.danim.iotalexa.Singletons.VolleySingleton;
 
 import java.util.Locale;
 
@@ -79,7 +86,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 mLivingRoomStatus.setDeskLamp(!mLivingRoomStatus.isDeskLampOn());
 
-                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar);
+                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar, true);
             }
         });
 
@@ -88,9 +95,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
+                //mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
 
-                _turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar);
+                //_turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
             }
         });
 
@@ -138,10 +145,62 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
      * Function to control the desk lamp
      * @param on: switch on and off.
      */
-    private void _turnOnOffLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
+    private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean deskLamp)
     {
-        _convertImageBW(!on, lamp);
+        final View coordinatorLayout = getActivity().findViewById(R.id.main_content);
 
+        // TODO: add foot lamp
+        String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.LIGHT_ON : Constants.LIGHT_OFF) : null;
+
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                Snackbar.make(coordinatorLayout, (on) ? "Light switched on" : "Light switched off", Snackbar.LENGTH_SHORT).show();
+
+                _convertImageBW(!on, lamp);
+
+                _animateLamp(on, lamp, lampProgress);
+
+                if (deskLamp)
+                {
+                    mLivingRoomStatus.setDeskLamp(true);
+                }
+                else
+                {
+                    mLivingRoomStatus.setFootLamp(true);
+                }
+            }
+        }
+        , new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
+
+                Snackbar.make(coordinatorLayout, "Could not connect", Snackbar.LENGTH_SHORT).show();
+
+                _animateLamp(!on, lamp, lampProgress);
+                _convertImageBW(on, lamp);
+
+                if (deskLamp)
+                {
+                    mLivingRoomStatus.setDeskLamp(false);
+                }
+                else
+                {
+                    mLivingRoomStatus.setFootLamp(false);
+                }
+            }
+        });
+
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+    private void _animateLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
+    {
         lampProgress.setProgress((on) ? 100 : 0, true);
 
         AnimationSet animationSet = new AnimationSet(true);
