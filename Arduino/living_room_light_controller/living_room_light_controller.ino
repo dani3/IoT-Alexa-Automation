@@ -22,14 +22,14 @@ void _quickLEDFlashing(int times)
   digitalWrite(LED_BUILTIN, HIGH);
   delay(25);
 
-  if (times == 1) return;
+  if (times == ONCE) return;
 
   digitalWrite(LED_BUILTIN, LOW);
   delay(50);
   digitalWrite(LED_BUILTIN, HIGH);
   delay(25);
 
-  if (times == 2) return;
+  if (times == TWICE) return;
 
   digitalWrite(LED_BUILTIN, LOW);
   delay(50);
