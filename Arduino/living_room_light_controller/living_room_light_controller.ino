@@ -4,6 +4,10 @@
 
 #define DEBUG
 
+#define ONCE      1
+#define TWICE     2
+#define THRICE    3
+
 // Network information.
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
@@ -11,17 +15,21 @@ const char * PWD  = "1123581321";
 // Set web server port number to 80.
 ESP8266WebServer server(80);
 
-void _quickLEDFlashing()
+void _quickLEDFlashing(int times)
 {
   digitalWrite(LED_BUILTIN, LOW);
   delay(50);
   digitalWrite(LED_BUILTIN, HIGH);
   delay(25);
 
+  if (times == 1) return;
+
   digitalWrite(LED_BUILTIN, LOW);
   delay(50);
   digitalWrite(LED_BUILTIN, HIGH);
   delay(25);
+
+  if (times == 2) return;
 
   digitalWrite(LED_BUILTIN, LOW);
   delay(50);
@@ -53,7 +61,7 @@ void _connectToWiFi()
   }
 
   // Let people know we're connected!
-  _quickLEDFlashing();
+  _quickLEDFlashing(THRICE);
 
 #ifdef DEBUG
   Serial.println("");
@@ -72,6 +80,8 @@ void _startHTTPServer()
 #endif
 
     server.send(200, "text/plain", "Done");
+
+    _quickLEDFlashing(ONCE);
   });
 
   server.on("/lightOff", HTTP_GET, []()
@@ -79,6 +89,8 @@ void _startHTTPServer()
 #ifdef DEBUG
     Serial.println("Got Request to switch light off ...\n");
 #endif
+
+    _quickLEDFlashing(ONCE);
 
     server.send(200, "text/plain", "Done");
   });
