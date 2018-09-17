@@ -4,6 +4,10 @@
 
 #define DEBUG
 
+#define GPIO_RELAY              2
+#define GPIO_SWITCH             3
+#define GPIO_CURRENT_SENSOR     4
+
 #define ONCE      1
 #define TWICE     2
 #define THRICE    3
@@ -79,9 +83,9 @@ void _startHTTPServer()
     Serial.println("Got Request to switch light on ...\n");
 #endif
 
-    server.send(200, "text/plain", "Done");
-
     _quickLEDFlashing(ONCE);
+
+    server.send(200, "text/plain", "Done");
   });
 
   server.on("/lightOff", HTTP_GET, []()
@@ -93,6 +97,18 @@ void _startHTTPServer()
     _quickLEDFlashing(ONCE);
 
     server.send(200, "text/plain", "Done");
+  });
+
+  server.on("/getStatus", HTTP_GET, []()
+  {
+#ifdef DEBUG
+    Serial.println("Got Request to get the status ...\n");
+#endif
+    _quickLEDFlashing(ONCE);
+
+    char * status = ((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On" : "Off");
+
+    server.send(200, "text/plain", "Status:" + status);
   });
 
   server.begin();
@@ -108,8 +124,15 @@ void setup()
 
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+  // Initialize the RELAY pin as an output.
+  pinMode(GPIO_RELAY, OUTPUT);
+  // Initialize the SWITCH pin as an input.
+  pinMode(GPIO_SWITCH, INPUT);
+  // Initialize the CURRENT SENSOR pin as an input.
+  pinMode(GPIO_CURRENT_SENSOR, INPUT);
 
   digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(GPIO_RELAY, LOW);
 
   _connectToWiFi();
   _startHTTPServer();
