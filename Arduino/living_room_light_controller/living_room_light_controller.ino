@@ -2,10 +2,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
+#include "current_meter.h"
+
 #define DEBUG
 
 #define GPIO_RELAY              2
-#define GPIO_SWITCH             3
 #define GPIO_CURRENT_SENSOR     4
 
 #define ONCE      1
@@ -15,6 +16,8 @@
 // Network information.
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
+
+int deviceState;
 
 // Set web server port number to 80.
 ESP8266WebServer server(80);
@@ -85,6 +88,8 @@ void _startHTTPServer()
 
     _quickLEDFlashing(ONCE);
 
+    _turnOnRelay();
+
     server.send(200, "text/plain", "Done");
   });
 
@@ -96,6 +101,8 @@ void _startHTTPServer()
 
     _quickLEDFlashing(ONCE);
 
+    _turnOffRelay();
+
     server.send(200, "text/plain", "Done");
   });
 
@@ -104,11 +111,12 @@ void _startHTTPServer()
 #ifdef DEBUG
     Serial.println("Got Request to get the status ...\n");
 #endif
+
     _quickLEDFlashing(ONCE);
 
-    char * status = ((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On" : "Off");
+    const char * status = ((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On" : "Off");
 
-    server.send(200, "text/plain", "Status:" + status);
+    server.send(200, "text/plain", status);
   });
 
   server.begin();
@@ -116,6 +124,34 @@ void _startHTTPServer()
 #ifdef DEBUG
   Serial.println("HTTP Server started!");
 #endif
+}
+
+void _turnOffRelay()
+{
+  currentMeter();
+
+  if (deviceState == 1 && digitalRead(GPIO_RELAY) == HIGH)
+  {
+    digitalWrite(GPIO_RELAY, LOW);
+  }
+  else
+  {
+    digitalWrite(GPIO_RELAY, HIGH);
+  }
+}
+
+void _turnOnRelay()
+{
+  currentMeter();
+
+  if (deviceState == 0 && digitalRead(GPIO_RELAY) == LOW)
+  {
+      digitalWrite(GPIO_RELAY, HIGH);
+  }
+  else
+  {
+    digitalWrite(GPIO_RELAY, LOW);
+  }
 }
 
 void setup()
@@ -126,10 +162,8 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   // Initialize the RELAY pin as an output.
   pinMode(GPIO_RELAY, OUTPUT);
-  // Initialize the SWITCH pin as an input.
-  pinMode(GPIO_SWITCH, INPUT);
   // Initialize the CURRENT SENSOR pin as an input.
-  pinMode(GPIO_CURRENT_SENSOR, INPUT);
+  pinInit(GPIO_CURRENT_SENSOR);
 
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, LOW);
