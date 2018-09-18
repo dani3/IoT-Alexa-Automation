@@ -127,6 +127,8 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         // TODO: add foot lamp
         String urlDeskLamp = Constants.LIVING_ROOM_DESK_LAMP_IP + Constants.STATUS;
 
+        Log.d(Constants.TAG, "Connecting to: " + urlDeskLamp);
+
         StringRequest stringRequest = new StringRequest(urlDeskLamp, new Response.Listener<String>()
         {
             @Override
@@ -167,6 +169,8 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
         // TODO: add foot lamp
         String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.LIGHT_ON : Constants.LIGHT_OFF) : null;
+
+        Log.d(Constants.TAG, "Connecting to: " + url);
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>()
         {
