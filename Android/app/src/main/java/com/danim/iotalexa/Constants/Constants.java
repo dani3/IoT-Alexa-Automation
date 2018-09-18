@@ -20,6 +20,7 @@ public class Constants
 
     public static final String LIGHT_ON  = "/lightOn";
     public static final String LIGHT_OFF = "/lightOff";
+    public static final String STATUS    = "/getStatus";
 
     public enum TEMPERATURE_STATES
     {

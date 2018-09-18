@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -104,41 +103,58 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         return fragment;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
 
-        new RetrieveData().execute();
-    }
+        mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false, false);
 
-    private class RetrieveData extends AsyncTask<Void, Void, Void>
-    {
-        @Override
-        protected Void doInBackground(Void... voids)
+        mTemperatureTextView.setText(String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
+        mHumidityTextView.setText(Integer.toString(mLivingRoomStatus.getHumidity()));
+        mTemperatureStateTextView.setText(Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
+        mTemperatureProgressBar.setProgress(Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
+
+        mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
+
+        _convertImageBW(!mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView);
+        mDeskLampProgressBar.setProgress((mLivingRoomStatus.isDeskLampOn()) ? 100 : 0, true);
+
+        _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
+        mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, true);
+
+        // TODO: add foot lamp
+        String urlDeskLamp = Constants.LIVING_ROOM_DESK_LAMP_IP + Constants.STATUS;
+
+        StringRequest stringRequest = new StringRequest(urlDeskLamp, new Response.Listener<String>()
         {
-            mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false, false);
+            @Override
+            public void onResponse(String response)
+            {
+                boolean on = (response.equals("On"));
 
-            return null;
+                mLivingRoomStatus.setDeskLamp(on);
+
+                _convertImageBW(!on, mDeskLampImageView);
+
+                _animateLamp(on, mDeskLampImageView, mDeskLampProgressBar);
+            }
         }
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(Void unused)
+        , new Response.ErrorListener()
         {
-            mTemperatureTextView.setText(String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
-            mHumidityTextView.setText(Integer.toString(mLivingRoomStatus.getHumidity()));
-            mTemperatureStateTextView.setText(Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
-            mTemperatureProgressBar.setProgress(Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                final View coordinatorLayout = getActivity().findViewById(R.id.main_content);
 
-            mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
+                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
 
-            _convertImageBW(!mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView);
-            mDeskLampProgressBar.setProgress((mLivingRoomStatus.isDeskLampOn()) ? 100 : 0, true);
+                Snackbar.make(coordinatorLayout, "Could not connect", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
-            _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
-            mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, true);
-        }
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 
     /**
