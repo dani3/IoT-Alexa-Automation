@@ -16,3 +16,4 @@ ___
 * [Arduino docs](https://www.arduino.cc/reference/en/#page-title)
 * [Static IP assignation](https://www.howtogeek.com/69612/how-to-set-up-static-dhcp-on-your-dd-wrt-router/)
 * [Setting the HTTP server](https://techtutorialsx.com/2016/10/03/esp8266-setting-a-simple-http-webserver/)
+* [Controlling the relay module](https://www.az-delivery.de/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/esp8266-01-relais-mit-website-steuern?ls=en)
