@@ -6,8 +6,7 @@
 
 #define DEBUG
 
-#define GPIO_RELAY              2
-#define GPIO_CURRENT_SENSOR     4
+#define GPIO_CURRENT_SENSOR     0
 
 #define ONCE      1
 #define TWICE     2
@@ -17,7 +16,15 @@
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
 
+// Commands to control the relay.
+const byte openRelay [] = {0xA0, 0x01, 0x00, 0xA1};
+const byte closeRelay [] = {0xA0, 0x01, 0x01, 0xA2};
+
 int deviceState;
+int relayState;
+
+bool _wifiConnected;
+bool _serverStarted;
 
 // Set web server port number to 80.
 ESP8266WebServer server(80);
@@ -45,8 +52,6 @@ void _quickLEDFlashing(int times)
 
 void _connectToWiFi()
 {
-  bool _ledOn = false;
-
   // WiFi setup
 #ifdef DEBUG
   Serial.print("Connecting to ");
@@ -57,8 +62,7 @@ void _connectToWiFi()
   WiFi.begin(SSID, PWD);
   while (WiFi.status() != WL_CONNECTED)
   {
-    digitalWrite(LED_BUILTIN, (_ledOn) ? LOW : HIGH);
-    _ledOn = !_ledOn;
+    _quickLEDFlashing(TWICE);
 
     delay(500);
 
@@ -116,7 +120,7 @@ void _startHTTPServer()
 
     const char * status = ((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On" : "Off");
 
-    server.send(200, "text/plain", status);
+    server.send(200, "text/plain", "Off");
   });
 
   server.begin();
@@ -130,13 +134,13 @@ void _turnOffRelay()
 {
   currentMeter();
 
-  if (deviceState == 1 && digitalRead(GPIO_RELAY) == HIGH)
+  if (!deviceState)
   {
-    digitalWrite(GPIO_RELAY, LOW);
-  }
-  else
-  {
-    digitalWrite(GPIO_RELAY, HIGH);
+    Serial.write(
+      (relayState == LOW) ? openRelay : closeRelay, (relayState == LOW) ? sizeof(openRelay) : sizeof(closeRelay)
+    );
+
+    relayState = (relayState == LOW) ? HIGH : LOW;
   }
 }
 
@@ -144,29 +148,32 @@ void _turnOnRelay()
 {
   currentMeter();
 
-  if (deviceState == 0 && digitalRead(GPIO_RELAY) == LOW)
+  if (deviceState)
   {
-      digitalWrite(GPIO_RELAY, HIGH);
-  }
-  else
-  {
-    digitalWrite(GPIO_RELAY, LOW);
+    Serial.write(
+      (relayState == LOW) ? openRelay : closeRelay, (relayState == LOW) ? sizeof(openRelay) : sizeof(closeRelay)
+    );
+
+    relayState = (relayState == LOW) ? HIGH : LOW;
   }
 }
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
+
+  _wifiConnected = false;
+  _serverStarted = false;
 
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-  // Initialize the RELAY pin as an output.
-  pinMode(GPIO_RELAY, OUTPUT);
   // Initialize the CURRENT SENSOR pin as an input.
   pinInit(GPIO_CURRENT_SENSOR);
 
   digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(GPIO_RELAY, LOW);
+  Serial.write(closeRelay, sizeof(closeRelay));
+
+  relayState = LOW;
 
   _connectToWiFi();
   _startHTTPServer();
