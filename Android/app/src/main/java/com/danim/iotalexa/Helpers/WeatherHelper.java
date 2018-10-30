@@ -3,6 +3,10 @@ package com.danim.iotalexa.Helpers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -10,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.danim.iotalexa.Constants.Constants;
+import com.danim.iotalexa.R;
 import com.danim.iotalexa.Singletons.VolleySingleton;
 
 import org.json.JSONArray;
@@ -20,12 +25,32 @@ public class WeatherHelper
 {
     private static int mLocationKey;
 
-    public static void loadForecastInfo(final Context context, String city, final TextView temperatureTextView, final TextView statusTextView)
+    /**
+     * Function that loads the current weather.
+     * @param context: context necessary for general purposes.
+     * @param city: current city.
+     * @param temperatureTextView: textview containing the temperature.
+     * @param statusTextView: textview containig the status.
+     * @param containerView: whole weather container.
+     * @param loadingView: loading view.
+     * @param errorTextView: textview to show an error.
+     */
+    public static void loadForecastInfo(
+              final Context context
+            , final String city
+            , final TextView temperatureTextView
+            , final TextView statusTextView
+            , final View containerView
+            , final View loadingView
+            , final View errorTextView)
     {
         String url = Utils.fixUrl(
                 Constants.ACCUWEATHER_API_GET_LOCATION_KEY.replace("?1", Constants.ACCUWEATHER_API_KEY).replace("?2", city));
 
         Log.d(Constants.TAG, "Connecting to: " + url + " to retrieve the Location Key");
+
+        containerView.setVisibility(View.INVISIBLE);
+        loadingView.setVisibility(View.VISIBLE);
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
               Request.Method.GET
@@ -42,10 +67,34 @@ public class WeatherHelper
 
                         Log.d(Constants.TAG, "Location Key retrieved for Copenhagen: " + mLocationKey);
 
-                        updateForecastGUI(context, temperatureTextView, statusTextView);
+                        _updateForecastGUI(context, temperatureTextView, statusTextView, containerView, loadingView, errorTextView);
 
                     } catch (JSONException e) {
                         mLocationKey = -1;
+
+                        // Start the animations
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(1.f, .0f);
+                        alphaAnimation.setDuration(75);
+                        alphaAnimation.setStartOffset(1000);
+
+                        alphaAnimation.setAnimationListener(new Animation.AnimationListener()
+                        {
+                            @Override
+                            public void onAnimationStart(Animation animation) {}
+
+                            @Override
+                            public void onAnimationEnd(Animation animation)
+                            {
+                                loadingView.setVisibility(View.INVISIBLE);
+
+                                errorTextView.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {}
+                        });
+
+                        loadingView.startAnimation(alphaAnimation);
 
                         e.printStackTrace();
                     }
@@ -65,7 +114,13 @@ public class WeatherHelper
         VolleySingleton.getInstance(context).addToRequestQueue(jsonArrayRequest);
     }
 
-    private static void updateForecastGUI(final Context context, final TextView temperatureTextView, final TextView statusTextView)
+    private static void _updateForecastGUI(
+              final Context context
+            , final TextView temperatureTextView
+            , final TextView statusTextView
+            , final View containerView
+            , final View loadingView
+            , final View errorTextView)
     {
         String url = Utils.fixUrl(
                 Constants.ACCUWEATHER_API_CURRENT_CONDITIONS.replace("?1", Integer.toString(mLocationKey)).replace("?2", Constants.ACCUWEATHER_API_KEY));
@@ -84,14 +139,67 @@ public class WeatherHelper
                 {
                     try
                     {
-                        JSONObject jsonObject = response.getJSONObject(0);
-
                         Log.d(Constants.TAG, "Current Conditions retrieved");
 
-                        temperatureTextView.setText(Integer.toString(jsonObject.getJSONObject("Temperature").getJSONObject("Metric").getInt("Value")));
-                        statusTextView.setText(jsonObject.getString("WeatherText"));
+                        JSONObject jsonObject = response.getJSONObject(0);
+
+                        // Everything is ok, update the TextViews
+                        temperatureTextView.setText(
+                                Integer.toString(jsonObject.getJSONObject("Temperature").getJSONObject("Metric").getInt("Value")));
+                        statusTextView.setText(
+                                jsonObject.getString("WeatherText"));
+
+                        // Start the animations
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(1.f, .0f);
+                        alphaAnimation.setDuration(75);
+                        alphaAnimation.setStartOffset(1000);
+
+                        alphaAnimation.setAnimationListener(new Animation.AnimationListener()
+                        {
+                            @Override
+                            public void onAnimationStart(Animation animation) {}
+
+                            @Override
+                            public void onAnimationEnd(Animation animation)
+                            {
+                                loadingView.setVisibility(View.INVISIBLE);
+
+                                containerView.setVisibility(View.VISIBLE);
+                                containerView.startAnimation(
+                                        AnimationUtils.loadAnimation(context, R.anim.slide_from_bottom));
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {}
+                        });
+
+                        loadingView.startAnimation(alphaAnimation);
 
                     } catch (JSONException e) {
+                        // Start the animations
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(1.f, .0f);
+                        alphaAnimation.setDuration(75);
+                        alphaAnimation.setStartOffset(1000);
+
+                        alphaAnimation.setAnimationListener(new Animation.AnimationListener()
+                        {
+                            @Override
+                            public void onAnimationStart(Animation animation) {}
+
+                            @Override
+                            public void onAnimationEnd(Animation animation)
+                            {
+                                loadingView.setVisibility(View.INVISIBLE);
+
+                                errorTextView.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {}
+                        });
+
+                        loadingView.startAnimation(alphaAnimation);
+
                         e.printStackTrace();
                     }
                 }

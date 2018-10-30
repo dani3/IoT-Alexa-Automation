@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -33,7 +34,13 @@ public class MainActivity extends AppCompatActivity
         _startAnimations();
 
         WeatherHelper.loadForecastInfo(
-                this, Constants.ACCUWEATHER_CITY, (TextView) findViewById(R.id.currently_temperature), (TextView) findViewById(R.id.currently_status));
+                  this
+                , Constants.ACCUWEATHER_CITY
+                , (TextView) findViewById(R.id.currently_temperature)
+                , (TextView) findViewById(R.id.currently_status)
+                , findViewById(R.id.weather_container)
+                , findViewById(R.id.currently_loading)
+                , findViewById(R.id.currently_error));
     }
 
     /**
@@ -46,8 +53,8 @@ public class MainActivity extends AppCompatActivity
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = findViewById(R.id.view_pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(mSectionsPagerAdapter);
     }
 
     /**
@@ -77,9 +84,6 @@ public class MainActivity extends AppCompatActivity
     {
         findViewById(R.id.toolbar_title).startAnimation(
                 AnimationUtils.loadAnimation(this, R.anim.slide_from_top));
-
-        findViewById(R.id.weather_container).startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom));
 
         Animation fromBotton = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);
         fromBotton.setStartOffset(75);
