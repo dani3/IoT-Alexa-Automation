@@ -1,5 +1,12 @@
 package com.danim.iotalexa.Beans;
 
+/**
+ * Struct to store the status of the Living Room. It will manage these devices:
+ *
+ *  - Sensors Device for temperature and humidity.
+ *  - Desk Lamp Device.
+ *  - Foot Lamp Device
+ */
 public class LivingRoomStatus
 {
     private float mTemperature;
@@ -7,12 +14,12 @@ public class LivingRoomStatus
     private boolean mDeskLamp;
     private boolean mFootLamp;
 
-    public LivingRoomStatus(float temperature, int humidity, boolean deskLamp, boolean footLamp)
+    public LivingRoomStatus()
     {
-        mTemperature = temperature;
-        mHumidity    = humidity;
-        mDeskLamp    = deskLamp;
-        mFootLamp    = footLamp;
+        mTemperature = 20.5f;
+        mHumidity    = 32;
+        mDeskLamp    = false;
+        mFootLamp    = false;
     }
 
     public float getTemperature()

@@ -18,9 +18,13 @@ public class Constants
 
     public static final String LIVING_ROOM_DESK_LAMP_IP = "http://192.168.1.11";
 
-    public static final String LIGHT_ON  = "/lightOn";
-    public static final String LIGHT_OFF = "/lightOff";
-    public static final String STATUS    = "/getStatus";
+    public static final String SWITCH_LIGHT_ON  = "/lightOn";
+    public static final String SWITCH_LIGHT_OFF = "/lightOff";
+    public static final String GET_STATUS       = "/getStatus";
+    public static final String GET_TEMPERATURE  = "/getTemperature";
+    public static final String GET_HUMIDITY     = "/getHumidity";
+
+    public static final short LIVING_ROOM_NUMBER_DEVICES = 1;
 
     public enum TEMPERATURE_STATES
     {
