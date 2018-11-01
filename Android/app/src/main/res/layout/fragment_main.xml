@@ -1,111 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- Header -->
-    <TextView
-        android:layout_width="match_parent"
+    <!-- Loading View -->
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/living_room_loading"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/caviar_dreams"
-        android:textSize="24sp"
-        android:textColor="@android:color/white"
-        android:text="@string/living_room"
-        android:layout_marginLeft="38dp"
-        android:layout_marginRight="38dp"
-        android:layout_marginTop="38dp"/>
+        android:visibility="invisible"
+        style="@style/SpinKitView.Wave"
+        app:SpinKit_Color="@android:color/white"
+        android:layout_gravity="center"/>
 
+    <!-- Error -->
+    <TextView
+        android:id="@+id/living_room_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:fontFamily="@font/caviar_dreams"
+        android:padding="8dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/error_message"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <!-- Content -->
     <LinearLayout
+        android:id="@+id/living_room_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="38dp"
-        android:background="@null"
-        android:weightSum="1"
-        android:orientation="horizontal">
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/caviar_dreams"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:text="@string/living_room"
+            android:layout_marginLeft="38dp"
+            android:layout_marginRight="38dp"
+            android:layout_marginTop="38dp"/>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".5"
+            android:layout_margin="38dp"
             android:background="@null"
-            android:orientation="vertical"
-            android:layout_marginRight="8dp"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:orientation="horizontal">
 
-            <!-- Temperature -->
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_temperature_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight=".5"
-                android:layout_marginBottom="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp">
+                android:background="@null"
+                android:orientation="vertical"
+                android:layout_marginRight="8dp"
+                android:weightSum="1">
 
-                <include layout="@layout/temperature"/>
+                <!-- Temperature -->
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_temperature_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".5"
+                    android:layout_marginBottom="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
 
-            </android.support.v7.widget.CardView>
+                    <include layout="@layout/temperature"/>
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_tbd1_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_tbd1_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".5"
+                    android:layout_marginTop="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
+
+                    <include layout="@layout/desk_lamp"/>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight=".5"
-                android:layout_marginTop="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp">
+                android:background="@null"
+                android:orientation="vertical"
+                android:layout_marginLeft="8dp"
+                android:weightSum="1">
 
-                <include layout="@layout/desk_lamp"/>
+                <!-- Humidity -->
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_humidity_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".5"
+                    android:layout_marginBottom="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
 
-            </android.support.v7.widget.CardView>
+                    <include layout="@layout/humidity"/>
 
-        </LinearLayout>
+                </android.support.v7.widget.CardView>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".5"
-            android:background="@null"
-            android:orientation="vertical"
-            android:layout_marginLeft="8dp"
-            android:weightSum="1">
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_tbd2_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".5"
+                    android:layout_marginTop="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
 
-            <!-- Humidity -->
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_humidity_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".5"
-                android:layout_marginBottom="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp">
+                    <include layout="@layout/foot_lamp"/>
 
-                <include layout="@layout/humidity"/>
+                </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_tbd2_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".5"
-                android:layout_marginTop="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp">
-
-                <include layout="@layout/foot_lamp"/>
-
-            </android.support.v7.widget.CardView>
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
+

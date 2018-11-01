@@ -5,9 +5,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,17 +20,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.danim.iotalexa.Beans.LivingRoomStatus;
+import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.Utils;
 import com.danim.iotalexa.R;
+import com.danim.iotalexa.Singletons.VolleySingleton;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class LivingRoomFragment extends android.support.v4.app.Fragment
 {
+    private AtomicInteger mDevicesConnected;
+    private AtomicBoolean mErrorWithDevice;
+
+    private String mUrlDeskLamp;
     private LivingRoomStatus mLivingRoomStatus;
 
     private TextView mTemperatureTextView;
@@ -41,7 +53,19 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private ProgressBar mDeskLampProgressBar;
     private ProgressBar mFootLampProgressBar;
 
-    public LivingRoomFragment() {}
+    private View mContainer;
+    private View mLoadingView;
+    private View mErrorTextView;
+
+    public LivingRoomFragment()
+    {
+        mUrlDeskLamp = Constants.LIVING_ROOM_DESK_LAMP_IP + Constants.GET_STATUS;
+
+        mLivingRoomStatus = new LivingRoomStatus();
+
+        mDevicesConnected = new AtomicInteger(0);
+        mErrorWithDevice  = new AtomicBoolean(false);
+    }
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -68,6 +92,13 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
         mDeskLampProgressBar      = fragment.findViewById(R.id.living_room_desk_lamp_progress);
         mFootLampProgressBar      = fragment.findViewById(R.id.living_room_foot_lamp_progress);
+        mContainer                = fragment.findViewById(R.id.living_room_container);
+        mLoadingView              = fragment.findViewById(R.id.living_room_loading);
+        mErrorTextView            = fragment.findViewById(R.id.living_room_error);
+
+        mContainer.setVisibility(View.INVISIBLE);
+        mErrorTextView.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.VISIBLE);
 
         mDeskLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
         mFootLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
@@ -79,7 +110,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 mLivingRoomStatus.setDeskLamp(!mLivingRoomStatus.isDeskLampOn());
 
-                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar);
+                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar, true);
             }
         });
 
@@ -88,9 +119,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
+                //mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
 
-                _turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar);
+                //_turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
             }
         });
 
@@ -102,27 +133,62 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        new RetrieveData().execute();
+        Log.d(Constants.TAG, "Connecting to: " + mUrlDeskLamp);
+
+        StringRequest deskLampRequest = new StringRequest(mUrlDeskLamp, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                boolean on = (response.equalsIgnoreCase("On"));
+
+                mLivingRoomStatus.setDeskLamp(on);
+
+                if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
+                {
+                    _initializeViews();
+                }
+            }
+        }
+        , new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
+
+                mErrorWithDevice.set(true);
+
+                if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
+                {
+                    _initializeViews();
+                }
+            }
+        });
+
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(deskLampRequest);
     }
 
-    private class RetrieveData extends AsyncTask<Void, Void, Void>
+    /**
+     * Method that initializes everything once all the devices are connected.
+     */
+    @SuppressLint("SetTextI18n")
+    private void _initializeViews()
     {
-        @Override
-        protected Void doInBackground(Void... voids)
+        if (!mErrorWithDevice.get())
         {
-            mLivingRoomStatus = new LivingRoomStatus(21.5f, 17, false, false);
+            mContainer.setVisibility(View.VISIBLE);
+            mErrorTextView.setVisibility(View.INVISIBLE);
+            mLoadingView.setVisibility(View.INVISIBLE);
 
-            return null;
-        }
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(Void unused)
-        {
-            mTemperatureTextView.setText(String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
-            mHumidityTextView.setText(Integer.toString(mLivingRoomStatus.getHumidity()));
-            mTemperatureStateTextView.setText(Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
-            mTemperatureProgressBar.setProgress(Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
+            mTemperatureTextView.setText(
+                    String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
+            mHumidityTextView.setText(
+                    Integer.toString(mLivingRoomStatus.getHumidity()));
+            mTemperatureStateTextView.setText(
+                    Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
+            mTemperatureProgressBar.setProgress(
+                    Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
 
             mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
 
@@ -132,16 +198,70 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
             mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, true);
         }
+        else
+        {
+            mContainer.setVisibility(View.INVISIBLE);
+            mErrorTextView.setVisibility(View.VISIBLE);
+            mLoadingView.setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
      * Function to control the desk lamp
      * @param on: switch on and off.
      */
-    private void _turnOnOffLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
+    private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean deskLamp)
     {
-        _convertImageBW(!on, lamp);
+        // TODO: add foot lamp
+        String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_ON : Constants.SWITCH_LIGHT_OFF) : null;
 
+        Log.d(Constants.TAG, "Connecting to: " + url);
+
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                _convertImageBW(!on, lamp);
+
+                _animateLamp(on, lamp, lampProgress);
+
+                if (deskLamp)
+                {
+                    mLivingRoomStatus.setDeskLamp(true);
+                }
+                else
+                {
+                    mLivingRoomStatus.setFootLamp(true);
+                }
+            }
+        }
+        , new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
+
+                _animateLamp(!on, lamp, lampProgress);
+                _convertImageBW(on, lamp);
+
+                if (deskLamp)
+                {
+                    mLivingRoomStatus.setDeskLamp(false);
+                }
+                else
+                {
+                    mLivingRoomStatus.setFootLamp(false);
+                }
+            }
+        });
+
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+    private void _animateLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
+    {
         lampProgress.setProgress((on) ? 100 : 0, true);
 
         AnimationSet animationSet = new AnimationSet(true);

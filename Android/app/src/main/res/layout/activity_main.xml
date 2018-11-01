@@ -10,6 +10,7 @@
     android:background="@drawable/background_gradient"
     tools:context=".MainActivity">
 
+    <!-- Toolbar -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -29,59 +30,90 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <RelativeLayout
-            android:id="@+id/weather_container"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".25"
-            android:layout_marginBottom="38dp"
-            android:gravity="bottom">
+            android:layout_marginBottom="38dp">
 
-            <TextView
-                android:id="@+id/currently"
+            <!-- Loading View -->
+            <com.github.ybq.android.spinkit.SpinKitView
+                android:id="@+id/currently_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
+                style="@style/SpinKitView.Wave"
+                app:SpinKit_Color="@android:color/white"
+                android:layout_gravity="center|bottom"/>
+
+            <!-- Error -->
+            <TextView
+                android:id="@+id/currently_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:fontFamily="@font/caviar_dreams"
                 android:padding="8dp"
-                android:layout_marginLeft="38dp"
-                android:text="@string/currently"
+                android:gravity="center"
+                android:layout_gravity="center|bottom"
+                android:text="@string/error_message"
                 android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/currently_temperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/currently"
-                android:fontFamily="@font/caviar_dreams"
-                android:text="@string/currently_temperature"
-                android:textSize="48sp"
-                android:textColor="@android:color/white"/>
+            <!-- Content -->
+            <RelativeLayout
+                android:id="@+id/weather_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom">
 
-            <TextView
-                android:id="@+id/currently_temperature_o"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/currently_temperature"
-                android:layout_marginLeft="4dp"
-                android:fontFamily="@font/caviar_dreams"
-                android:text="@string/currently_temperature_o"
-                android:textSize="14sp"
-                android:textColor="@android:color/white"/>
+                <TextView
+                    android:id="@+id/currently"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:padding="8dp"
+                    android:layout_marginLeft="38dp"
+                    android:text="@string/currently"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/currently_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/currently_temperature_o"
-                android:layout_alignBottom="@id/currently_temperature"
-                android:fontFamily="@font/caviar_dreams"
-                android:text="@string/currently_status"
-                android:padding="8dp"
-                android:textSize="18sp"
-                android:textColor="@android:color/white"/>
+                <TextView
+                    android:id="@+id/currently_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/currently"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:text="@string/currently_temperature"
+                    android:textSize="48sp"
+                    android:textColor="@android:color/white"/>
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/currently_temperature_o"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/currently_temperature"
+                    android:layout_marginLeft="4dp"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:text="@string/currently_temperature_o"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"/>
+
+                <TextView
+                    android:id="@+id/currently_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/currently_temperature_o"
+                    android:layout_alignBottom="@id/currently_temperature"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:text="@string/currently_status"
+                    android:padding="8dp"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"/>
+
+            </RelativeLayout>
+
+        </FrameLayout>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/view_pager"
