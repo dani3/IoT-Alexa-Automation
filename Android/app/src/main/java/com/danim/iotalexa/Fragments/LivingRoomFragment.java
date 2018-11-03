@@ -140,9 +140,19 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onResponse(String response)
             {
-                boolean on = (response.equalsIgnoreCase("On"));
+                String[] lines = response.split("\n");
+
+                boolean on = (lines[0].contains("On"));
+                float temperature = Float.parseFloat(lines[1].substring(lines[1].indexOf(" ") + 1));
+                float humidity = Float.parseFloat(lines[2].substring(lines[2].indexOf(" ") + 1));
+
+                Log.d(Constants.TAG, "Desk lamp: " + on);
+                Log.d(Constants.TAG, "Temperature: " + temperature);
+                Log.d(Constants.TAG, "Humidity: " + humidity);
 
                 mLivingRoomStatus.setDeskLamp(on);
+                mLivingRoomStatus.setTemperature(temperature);
+                mLivingRoomStatus.setHumidity((int) humidity);
 
                 if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
                 {
@@ -223,16 +233,15 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             public void onResponse(String response)
             {
                 _convertImageBW(!on, lamp);
-
                 _animateLamp(on, lamp, lampProgress);
 
                 if (deskLamp)
                 {
-                    mLivingRoomStatus.setDeskLamp(true);
+                    mLivingRoomStatus.setDeskLamp(!on);
                 }
                 else
                 {
-                    mLivingRoomStatus.setFootLamp(true);
+                    mLivingRoomStatus.setFootLamp(!on);
                 }
             }
         }
@@ -243,17 +252,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
 
-                _animateLamp(!on, lamp, lampProgress);
-                _convertImageBW(on, lamp);
 
-                if (deskLamp)
-                {
-                    mLivingRoomStatus.setDeskLamp(false);
-                }
-                else
-                {
-                    mLivingRoomStatus.setFootLamp(false);
-                }
             }
         });
 
