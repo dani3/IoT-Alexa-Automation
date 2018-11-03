@@ -7,7 +7,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,16 +42,16 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private AtomicInteger mDevicesConnected;
     private AtomicBoolean mErrorWithDevice;
 
-    private String mUrlDeskLamp;
+    private String mUrlFootLamp;
     private LivingRoomStatus mLivingRoomStatus;
 
     private TextView mTemperatureTextView;
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
-    private ImageView mDeskLampImageView;
+    private ImageView mCeilingLampImageView;
     private ImageView mFootLampImageView;
     private ProgressBar mTemperatureProgressBar;
-    private ProgressBar mDeskLampProgressBar;
+    private ProgressBar mCeilingLampProgressBar;
     private ProgressBar mFootLampProgressBar;
 
     private View mContainer;
@@ -61,7 +60,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
     public LivingRoomFragment()
     {
-        mUrlDeskLamp = Constants.LIVING_ROOM_DESK_LAMP_IP + Constants.GET_STATUS;
+        mUrlFootLamp = Constants.LIVING_ROOM_FOOT_LAMP_IP + Constants.GET_STATUS;
 
         mLivingRoomStatus = new LivingRoomStatus();
 
@@ -83,16 +82,16 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View deskLampContainer = fragment.findViewById(R.id.living_room_desk_lamp_container);
+        View ceilingLampContainer = fragment.findViewById(R.id.living_room_ceiling_lamp_container);
         View footLampContainer = fragment.findViewById(R.id.living_room_foot_lamp_container);
 
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
-        mDeskLampImageView        = fragment.findViewById(R.id.living_room_desk_lamp_image);
+        mCeilingLampImageView = fragment.findViewById(R.id.living_room_ceiling_lamp_image);
         mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
-        mDeskLampProgressBar      = fragment.findViewById(R.id.living_room_desk_lamp_progress);
+        mCeilingLampProgressBar = fragment.findViewById(R.id.living_room_ceiling_lamp_progress);
         mFootLampProgressBar      = fragment.findViewById(R.id.living_room_foot_lamp_progress);
         mContainer                = fragment.findViewById(R.id.living_room_container);
         mLoadingView              = fragment.findViewById(R.id.living_room_loading);
@@ -102,15 +101,15 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mErrorTextView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
 
-        mDeskLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+        mCeilingLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
         mFootLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
 
-        deskLampContainer.setOnClickListener(new View.OnClickListener()
+        ceilingLampContainer.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar, true);
+                //_turnOnOffLamp(mLivingRoomStatus.isCeilingLampOn(), mCeilingLampImageView, mCeilingLampProgressBar, true);
             }
         });
 
@@ -119,7 +118,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                //_turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
+                _turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
             }
         });
 
@@ -131,9 +130,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(Constants.TAG, "Connecting to: " + mUrlDeskLamp);
+        Log.d(Constants.TAG, "Connecting to: " + mUrlFootLamp);
 
-        StringRequest deskLampRequest = new StringRequest(mUrlDeskLamp, new Response.Listener<String>()
+        StringRequest footLampRequest = new StringRequest(mUrlFootLamp, new Response.Listener<String>()
         {
             @Override
             public void onResponse(String response)
@@ -144,11 +143,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
                 float temperature = Float.parseFloat(lines[1].substring(lines[1].indexOf(" ") + 1));
                 float humidity = Float.parseFloat(lines[2].substring(lines[2].indexOf(" ") + 1));
 
-                Log.d(Constants.TAG, "Desk lamp: " + on);
+                Log.d(Constants.TAG, "Foot lamp: " + on);
                 Log.d(Constants.TAG, "Temperature: " + temperature);
                 Log.d(Constants.TAG, "Humidity: " + humidity);
 
-                mLivingRoomStatus.setDeskLamp(on);
+                mLivingRoomStatus.setFootLamp(on);
                 mLivingRoomStatus.setTemperature(temperature);
                 mLivingRoomStatus.setHumidity((int) humidity);
 
@@ -174,7 +173,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             }
         });
 
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(deskLampRequest);
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(footLampRequest);
     }
 
     /**
@@ -196,15 +195,15 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             mTemperatureStateTextView.setText(
                     Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
             mTemperatureProgressBar.setProgress(
-                    Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), true);
+                    Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), false);
 
             mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
 
-            _convertImageBW(!mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView);
-            mDeskLampProgressBar.setProgress((mLivingRoomStatus.isDeskLampOn()) ? 100 : 0, true);
+            _convertImageBW(!mLivingRoomStatus.isCeilingLampOn(), mCeilingLampImageView);
+            mCeilingLampProgressBar.setProgress((mLivingRoomStatus.isCeilingLampOn()) ? 100 : 0, false);
 
             _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
-            mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, true);
+            mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, false);
         }
         else
         {
@@ -215,13 +214,15 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     }
 
     /**
-     * Function to control the desk lamp
-     * @param on: switch on and off.
+     * Function to control the lamps.
+     * @param on: switch on or off.
      */
-    private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean deskLamp)
+    private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean ceilingLamp)
     {
-        // TODO: add foot lamp
-        String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_OFF : Constants.SWITCH_LIGHT_ON) : null;
+        // TODO: add the other lamp
+        String url = (!ceilingLamp)
+                ? Constants.LIVING_ROOM_FOOT_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_OFF : Constants.SWITCH_LIGHT_ON)
+                : null;
 
         Log.d(Constants.TAG, "Connecting to: " + url);
 
@@ -230,9 +231,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onResponse(String response)
             {
-                if (deskLamp)
+                if (ceilingLamp)
                 {
-                    mLivingRoomStatus.setDeskLamp(!on);
+                    mLivingRoomStatus.setCeilingLamp(!on);
                 }
                 else
                 {
@@ -252,7 +253,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
                 YoYo.with(Techniques.Shake)
                     .duration(375)
-                    .playOn((deskLamp) ? mDeskLampImageView : mFootLampImageView);
+                    .playOn((ceilingLamp) ? mCeilingLampImageView : mFootLampImageView);
             }
         });
 
