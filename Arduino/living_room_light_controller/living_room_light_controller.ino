@@ -7,6 +7,7 @@
 #define DEBUG
 
 #define GPIO_CURRENT_SENSOR     0
+#define GPIO_RELAY              1
 
 #define ONCE      1
 #define TWICE     2
@@ -15,10 +16,6 @@
 // Network information.
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
-
-// Commands to control the relay.
-const byte openRelay [] = {0xA0, 0x01, 0x00, 0xA1};
-const byte closeRelay [] = {0xA0, 0x01, 0x01, 0xA2};
 
 int deviceState;
 int relayState;
@@ -62,7 +59,7 @@ void _connectToWiFi()
   WiFi.begin(SSID, PWD);
   while (WiFi.status() != WL_CONNECTED)
   {
-    _quickLEDFlashing(TWICE);
+    _quickLEDFlashing(ONCE);
 
     delay(500);
 
@@ -77,8 +74,10 @@ void _connectToWiFi()
 #ifdef DEBUG
   Serial.println("");
   Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  Serial.print("MAC address: ");
+  Serial.println(WiFi.macAddress());
 #endif
 }
 
@@ -118,9 +117,16 @@ void _startHTTPServer()
 
     _quickLEDFlashing(ONCE);
 
-    const char * status = ((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On" : "Off");
+    float humidity = 32.0f;
+    float temperature = 21.3f;
 
-    server.send(200, "text/plain", "Off");
+    String deskLamp = String("Desk lamp: ") + String((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On\n" : "Off\n");
+    String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
+    String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
+
+    String status = deskLamp + temperatureStr + humidityStr;
+
+    server.send(200, "text/plain", status);
   });
 
   server.begin();
@@ -136,9 +142,7 @@ void _turnOffRelay()
 
   if (!deviceState)
   {
-    Serial.write(
-      (relayState == LOW) ? openRelay : closeRelay, (relayState == LOW) ? sizeof(openRelay) : sizeof(closeRelay)
-    );
+    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
 
     relayState = (relayState == LOW) ? HIGH : LOW;
   }
@@ -150,9 +154,7 @@ void _turnOnRelay()
 
   if (deviceState)
   {
-    Serial.write(
-      (relayState == LOW) ? openRelay : closeRelay, (relayState == LOW) ? sizeof(openRelay) : sizeof(closeRelay)
-    );
+    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
 
     relayState = (relayState == LOW) ? HIGH : LOW;
   }
@@ -171,7 +173,7 @@ void setup()
   pinInit(GPIO_CURRENT_SENSOR);
 
   digitalWrite(LED_BUILTIN, LOW);
-  Serial.write(closeRelay, sizeof(closeRelay));
+  digitalWrite(GPIO_RELAY, LOW);
 
   relayState = LOW;
 

@@ -29,7 +29,7 @@ int getMaxValue()
   uint32_t start_time = millis();
 
   // Sample for 1000ms
-  while((millis() - start_time) < 1000)
+  while ((millis() - start_time) < 1000)
   {
     sensorValue = analogRead(current_sensor_pin);
     if (sensorValue > sensorMax)
@@ -52,7 +52,7 @@ void currentMeter()
   Serial.println("The effective value of the current is(in mA)");
   Serial.println(effective_value, 1);
 
-  if(effective_value > ON_CURRENT_THRESHOLD)
+  if (effective_value > ON_CURRENT_THRESHOLD)
   {
     Serial.println("Switch is on");
     deviceState = 1;
