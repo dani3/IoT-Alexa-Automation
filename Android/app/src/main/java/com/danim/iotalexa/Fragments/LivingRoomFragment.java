@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.danim.iotalexa.Beans.LivingRoomStatus;
 import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.Utils;
@@ -108,8 +110,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                mLivingRoomStatus.setDeskLamp(!mLivingRoomStatus.isDeskLampOn());
-
                 _turnOnOffLamp(mLivingRoomStatus.isDeskLampOn(), mDeskLampImageView, mDeskLampProgressBar, true);
             }
         });
@@ -119,8 +119,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                //mLivingRoomStatus.setFootLamp(!mLivingRoomStatus.isFootLampOn());
-
                 //_turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
             }
         });
@@ -223,7 +221,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean deskLamp)
     {
         // TODO: add foot lamp
-        String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_ON : Constants.SWITCH_LIGHT_OFF) : null;
+        String url = (deskLamp) ? Constants.LIVING_ROOM_DESK_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_OFF : Constants.SWITCH_LIGHT_ON) : null;
 
         Log.d(Constants.TAG, "Connecting to: " + url);
 
@@ -232,9 +230,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onResponse(String response)
             {
-                _convertImageBW(!on, lamp);
-                _animateLamp(on, lamp, lampProgress);
-
                 if (deskLamp)
                 {
                     mLivingRoomStatus.setDeskLamp(!on);
@@ -243,6 +238,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
                 {
                     mLivingRoomStatus.setFootLamp(!on);
                 }
+
+                _convertImageBW(on, lamp);
+                _animateLamp(!on, lamp, lampProgress);
             }
         }
         , new Response.ErrorListener()
@@ -252,7 +250,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
 
-
+                YoYo.with(Techniques.Shake)
+                    .duration(375)
+                    .playOn((deskLamp) ? mDeskLampImageView : mFootLampImageView);
             }
         });
 
