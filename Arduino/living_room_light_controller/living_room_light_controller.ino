@@ -120,11 +120,11 @@ void _startHTTPServer()
     float humidity = 32.0f;
     float temperature = 21.3f;
 
-    String deskLamp = String("Desk lamp: ") + String((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On\n" : "Off\n");
+    String footLamp = String("Foot lamp: ") + String((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On\n" : "Off\n");
     String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
     String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
 
-    String status = deskLamp + temperatureStr + humidityStr;
+    String status = footLamp + temperatureStr + humidityStr;
 
     server.send(200, "text/plain", status);
   });
