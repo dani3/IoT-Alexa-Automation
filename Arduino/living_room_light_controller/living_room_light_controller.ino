@@ -4,7 +4,7 @@
 
 #define DEBUG
 
-#define GPIO_RELAY     0
+#define GPIO_RELAY          0
 
 #define ONCE      1
 #define TWICE     2
@@ -14,7 +14,6 @@
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
 
-int deviceState;
 int relayState;
 
 bool _wifiConnected;
@@ -80,28 +79,15 @@ void _connectToWiFi()
 
 void _startHTTPServer()
 {
-  server.on("/lightOn", HTTP_GET, []()
+  server.on("/toggleLight", HTTP_GET, []()
   {
 #ifdef DEBUG
-    Serial.println("Got Request to switch light on ...\n");
+    Serial.println("Got Request to toggle the light ...\n");
 #endif
 
     _quickLEDFlashing(ONCE);
 
-    _turnOnRelay();
-
-    server.send(200, "text/plain", "Done");
-  });
-
-  server.on("/lightOff", HTTP_GET, []()
-  {
-#ifdef DEBUG
-    Serial.println("Got Request to switch light off ...\n");
-#endif
-
-    _quickLEDFlashing(ONCE);
-
-    _turnOffRelay();
+    _toggleRelay();
 
     server.send(200, "text/plain", "Done");
   });
@@ -120,7 +106,7 @@ void _startHTTPServer()
     String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
     String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
 
-    String status = footLamp + temperatureStr + humidityStr;
+    String status = temperatureStr + humidityStr;
 
     server.send(200, "text/plain", status);
   });
@@ -132,28 +118,11 @@ void _startHTTPServer()
 #endif
 }
 
-void _turnOffRelay()
+void _toggleRelay()
 {
-  currentMeter();
-
-  if (!deviceState)
-  {
-    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
-
-    relayState = (relayState == LOW) ? HIGH : LOW;
-  }
-}
-
-void _turnOnRelay()
-{
-  currentMeter();
-
-  if (deviceState)
-  {
-    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
-
-    relayState = (relayState == LOW) ? HIGH : LOW;
-  }
+  relayState = (relayState == LOW) ? HIGH : LOW;
+  
+  digitalWrite(GPIO_RELAY, relayState);
 }
 
 void setup()
