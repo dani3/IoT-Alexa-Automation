@@ -2,12 +2,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-#include "current_meter.h"
-
 #define DEBUG
 
-#define GPIO_CURRENT_SENSOR     0
-#define GPIO_RELAY              1
+#define GPIO_RELAY     0
 
 #define ONCE      1
 #define TWICE     2
@@ -120,7 +117,6 @@ void _startHTTPServer()
     float humidity = 32.0f;
     float temperature = 21.3f;
 
-    String footLamp = String("Foot lamp: ") + String((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On\n" : "Off\n");
     String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
     String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
 
@@ -169,8 +165,6 @@ void setup()
 
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-  // Initialize the CURRENT SENSOR pin as an input.
-  pinInit(GPIO_CURRENT_SENSOR);
 
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, LOW);
