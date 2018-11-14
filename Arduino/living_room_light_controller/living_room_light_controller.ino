@@ -2,12 +2,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-#include "current_meter.h"
-
 #define DEBUG
 
-#define GPIO_CURRENT_SENSOR     0
-#define GPIO_RELAY              1
+#define GPIO_RELAY          0
 
 #define ONCE      1
 #define TWICE     2
@@ -17,7 +14,6 @@
 const char * SSID = "OOV52-STH";
 const char * PWD  = "1123581321";
 
-int deviceState;
 int relayState;
 
 bool _wifiConnected;
@@ -83,28 +79,15 @@ void _connectToWiFi()
 
 void _startHTTPServer()
 {
-  server.on("/lightOn", HTTP_GET, []()
+  server.on("/toggleLight", HTTP_GET, []()
   {
 #ifdef DEBUG
-    Serial.println("Got Request to switch light on ...\n");
+    Serial.println("Got Request to toggle the light ...\n");
 #endif
 
     _quickLEDFlashing(ONCE);
 
-    _turnOnRelay();
-
-    server.send(200, "text/plain", "Done");
-  });
-
-  server.on("/lightOff", HTTP_GET, []()
-  {
-#ifdef DEBUG
-    Serial.println("Got Request to switch light off ...\n");
-#endif
-
-    _quickLEDFlashing(ONCE);
-
-    _turnOffRelay();
+    _toggleRelay();
 
     server.send(200, "text/plain", "Done");
   });
@@ -120,11 +103,10 @@ void _startHTTPServer()
     float humidity = 32.0f;
     float temperature = 21.3f;
 
-    String deskLamp = String("Desk lamp: ") + String((digitalRead(GPIO_CURRENT_SENSOR) == HIGH) ? "On\n" : "Off\n");
     String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
     String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
 
-    String status = deskLamp + temperatureStr + humidityStr;
+    String status = temperatureStr + humidityStr;
 
     server.send(200, "text/plain", status);
   });
@@ -136,28 +118,11 @@ void _startHTTPServer()
 #endif
 }
 
-void _turnOffRelay()
+void _toggleRelay()
 {
-  currentMeter();
-
-  if (!deviceState)
-  {
-    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
-
-    relayState = (relayState == LOW) ? HIGH : LOW;
-  }
-}
-
-void _turnOnRelay()
-{
-  currentMeter();
-
-  if (deviceState)
-  {
-    digitalWrite(GPIO_RELAY, (relayState == LOW) ? HIGH : LOW);
-
-    relayState = (relayState == LOW) ? HIGH : LOW;
-  }
+  relayState = (relayState == LOW) ? HIGH : LOW;
+  
+  digitalWrite(GPIO_RELAY, relayState);
 }
 
 void setup()
@@ -169,8 +134,6 @@ void setup()
 
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-  // Initialize the CURRENT SENSOR pin as an input.
-  pinInit(GPIO_CURRENT_SENSOR);
 
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, LOW);
