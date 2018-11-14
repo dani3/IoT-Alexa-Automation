@@ -90,7 +90,7 @@
                     app:cardBackgroundColor="@color/colorPrimary"
                     app:cardCornerRadius="8dp">
 
-                    <include layout="@layout/desk_lamp"/>
+                    <include layout="@layout/ceiling_lamp"/>
 
                 </android.support.v7.widget.CardView>
 

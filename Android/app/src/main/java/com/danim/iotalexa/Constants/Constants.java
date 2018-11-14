@@ -16,13 +16,10 @@ public class Constants
     public static final int PERMISSION_ALL = 1;
     public static final String[] PERMISSIONS = { Manifest.permission.INTERNET };
 
-    public static final String LIVING_ROOM_DESK_LAMP_IP = "http://192.168.1.11";
+    public static final String LIVING_ROOM_FOOT_LAMP_IP = "http://192.168.1.7";
 
-    public static final String SWITCH_LIGHT_ON  = "/lightOn";
-    public static final String SWITCH_LIGHT_OFF = "/lightOff";
-    public static final String GET_STATUS       = "/getStatus";
-    public static final String GET_TEMPERATURE  = "/getTemperature";
-    public static final String GET_HUMIDITY     = "/getHumidity";
+    public static final String TOGGLE_LIGHT  = "/toggleLight";
+    public static final String GET_STATUS    = "/getStatus";
 
     public static final short LIVING_ROOM_NUMBER_DEVICES = 1;
 
