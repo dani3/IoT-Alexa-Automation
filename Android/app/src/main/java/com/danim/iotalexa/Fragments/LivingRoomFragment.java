@@ -1,19 +1,14 @@
 package com.danim.iotalexa.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -45,14 +40,14 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private String mUrlFootLamp;
     private LivingRoomStatus mLivingRoomStatus;
 
+    private ScaleAnimation mPulseAnimation;
+
     private TextView mTemperatureTextView;
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
     private ImageView mCeilingLampImageView;
     private ImageView mFootLampImageView;
     private ProgressBar mTemperatureProgressBar;
-    private ProgressBar mCeilingLampProgressBar;
-    private ProgressBar mFootLampProgressBar;
 
     private View mContainer;
     private View mLoadingView;
@@ -88,11 +83,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
-        mCeilingLampImageView = fragment.findViewById(R.id.living_room_ceiling_lamp_image);
+        mCeilingLampImageView     = fragment.findViewById(R.id.living_room_ceiling_lamp_image);
         mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
-        mCeilingLampProgressBar = fragment.findViewById(R.id.living_room_ceiling_lamp_progress);
-        mFootLampProgressBar      = fragment.findViewById(R.id.living_room_foot_lamp_progress);
         mContainer                = fragment.findViewById(R.id.living_room_container);
         mLoadingView              = fragment.findViewById(R.id.living_room_loading);
         mErrorTextView            = fragment.findViewById(R.id.living_room_error);
@@ -101,15 +94,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mErrorTextView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
 
-        mCeilingLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-        mFootLampProgressBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-
         ceilingLampContainer.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                //_turnOnOffLamp(mLivingRoomStatus.isCeilingLampOn(), mCeilingLampImageView, mCeilingLampProgressBar, true);
+                //_toggleLamp(mCeilingLampImageView, true);
             }
         });
 
@@ -118,9 +108,16 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                _turnOnOffLamp(mLivingRoomStatus.isFootLampOn(), mFootLampImageView, mFootLampProgressBar, false);
+                _toggleLamp(mFootLampImageView, false);
             }
         });
+
+        mPulseAnimation = new ScaleAnimation(
+                1.f, 1.2f, 1.f, 1.2f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+
+        mPulseAnimation.setDuration(310);
+        mPulseAnimation.setRepeatCount(Animation.INFINITE);
+        mPulseAnimation.setRepeatMode(Animation.REVERSE);
 
         return fragment;
     }
@@ -139,15 +136,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 String[] lines = response.split("\n");
 
-                boolean on = (lines[0].contains("On"));
-                float temperature = Float.parseFloat(lines[1].substring(lines[1].indexOf(" ") + 1));
-                float humidity = Float.parseFloat(lines[2].substring(lines[2].indexOf(" ") + 1));
+                float temperature = Float.parseFloat(lines[0].substring(lines[0].indexOf(" ") + 1));
+                float humidity = Float.parseFloat(lines[1].substring(lines[1].indexOf(" ") + 1));
 
-                Log.d(Constants.TAG, "Foot lamp: " + on);
                 Log.d(Constants.TAG, "Temperature: " + temperature);
                 Log.d(Constants.TAG, "Humidity: " + humidity);
 
-                mLivingRoomStatus.setFootLamp(on);
                 mLivingRoomStatus.setTemperature(temperature);
                 mLivingRoomStatus.setHumidity((int) humidity);
 
@@ -198,12 +192,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
                     Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), false);
 
             mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
-
-            _convertImageBW(!mLivingRoomStatus.isCeilingLampOn(), mCeilingLampImageView);
-            mCeilingLampProgressBar.setProgress((mLivingRoomStatus.isCeilingLampOn()) ? 100 : 0, false);
-
-            _convertImageBW(!mLivingRoomStatus.isFootLampOn(), mFootLampImageView);
-            mFootLampProgressBar.setProgress((mLivingRoomStatus.isFootLampOn()) ? 100 : 0, false);
         }
         else
         {
@@ -215,13 +203,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
     /**
      * Function to control the lamps.
-     * @param on: switch on or off.
      */
-    private void _turnOnOffLamp(final boolean on, final ImageView lamp, final ProgressBar lampProgress, final boolean ceilingLamp)
+    private void _toggleLamp(final ImageView lamp, final boolean ceilingLamp)
     {
         // TODO: add the other lamp
         String url = (!ceilingLamp)
-                ? Constants.LIVING_ROOM_FOOT_LAMP_IP + ((on) ? Constants.SWITCH_LIGHT_OFF : Constants.SWITCH_LIGHT_ON)
+                ? Constants.LIVING_ROOM_FOOT_LAMP_IP + Constants.TOGGLE_LIGHT
                 : null;
 
         Log.d(Constants.TAG, "Connecting to: " + url);
@@ -231,17 +218,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onResponse(String response)
             {
-                if (ceilingLamp)
-                {
-                    mLivingRoomStatus.setCeilingLamp(!on);
-                }
-                else
-                {
-                    mLivingRoomStatus.setFootLamp(!on);
-                }
+                mPulseAnimation.cancel();
+                mPulseAnimation.reset();
 
-                _convertImageBW(on, lamp);
-                _animateLamp(!on, lamp, lampProgress);
+                YoYo.with(Techniques.Tada)
+                    .duration(750)
+                    .playOn(lamp);
             }
         }
         , new Response.ErrorListener()
@@ -251,49 +233,24 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             {
                 Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
 
+                mPulseAnimation.cancel();
+                mPulseAnimation.reset();
+
                 YoYo.with(Techniques.Shake)
                     .duration(375)
-                    .playOn((ceilingLamp) ? mCeilingLampImageView : mFootLampImageView);
+                    .playOn(lamp);
             }
         });
 
+        if (ceilingLamp)
+        {
+            mCeilingLampImageView.startAnimation(mPulseAnimation);
+        }
+        else
+        {
+            mFootLampImageView.startAnimation(mPulseAnimation);
+        }
+
         VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
-    }
-
-    private void _animateLamp(boolean on, ImageView lamp, ProgressBar lampProgress)
-    {
-        lampProgress.setProgress((on) ? 100 : 0, true);
-
-        AnimationSet animationSet = new AnimationSet(true);
-        animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
-
-        ScaleAnimation scaleUp = new ScaleAnimation(
-                1.f, 1.05f, 1.f, 1.05f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
-        scaleUp.setDuration(75);
-
-        ScaleAnimation scaleDown = new ScaleAnimation(
-                1.05f, 1.f, 1.05f, 1.f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
-        scaleDown.setDuration(75);
-        scaleDown.setStartOffset(75);
-
-        animationSet.setFillAfter(true);
-
-        animationSet.addAnimation(scaleUp);
-        animationSet.addAnimation(scaleDown);
-
-        lamp.startAnimation(animationSet);
-    }
-
-    /**
-     * Function to convert an image to BW or color.
-     * @param bw: black and white or color.
-     */
-    private void _convertImageBW(boolean bw, ImageView lamp)
-    {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation((bw) ? 0 : 1);
-
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        lamp.setColorFilter(filter);
     }
 }
