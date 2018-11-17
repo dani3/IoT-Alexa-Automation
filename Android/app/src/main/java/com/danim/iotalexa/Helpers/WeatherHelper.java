@@ -49,6 +49,7 @@ public class WeatherHelper
 
         Log.d(Constants.TAG, "Connecting to: " + url + " to retrieve the Location Key");
 
+        errorTextView.setVisibility(View.INVISIBLE);
         containerView.setVisibility(View.INVISIBLE);
         loadingView.setVisibility(View.VISIBLE);
 
@@ -86,7 +87,6 @@ public class WeatherHelper
                             public void onAnimationEnd(Animation animation)
                             {
                                 loadingView.setVisibility(View.INVISIBLE);
-
                                 errorTextView.setVisibility(View.VISIBLE);
                             }
 
