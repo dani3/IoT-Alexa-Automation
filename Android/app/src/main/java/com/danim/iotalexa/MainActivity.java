@@ -1,6 +1,7 @@
 package com.danim.iotalexa;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
@@ -20,11 +22,15 @@ import com.danim.iotalexa.Helpers.WeatherHelper;
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity
 {
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mContext = this;
 
         _initViews();
         _initToolbar();
@@ -32,7 +38,7 @@ public class MainActivity extends AppCompatActivity
         _startAnimations();
 
         WeatherHelper.loadForecastInfo(
-                  this
+                  mContext
                 , Constants.ACCUWEATHER_CITY
                 , (TextView) findViewById(R.id.currently_temperature)
                 , (TextView) findViewById(R.id.currently_status)
@@ -53,6 +59,27 @@ public class MainActivity extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(mSectionsPagerAdapter);
+
+        // Error message
+        final View messageView = findViewById(R.id.currently_error);
+        messageView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (messageView.getVisibility() == View.VISIBLE)
+                {
+                    WeatherHelper.loadForecastInfo(
+                              mContext
+                            , Constants.ACCUWEATHER_CITY
+                            , (TextView) findViewById(R.id.currently_temperature)
+                            , (TextView) findViewById(R.id.currently_status)
+                            , findViewById(R.id.weather_container)
+                            , findViewById(R.id.currently_loading)
+                            , findViewById(R.id.currently_error));
+                }
+            }
+        });
     }
 
     /**
