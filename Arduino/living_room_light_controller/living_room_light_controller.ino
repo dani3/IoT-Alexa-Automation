@@ -4,14 +4,14 @@
 
 #define DEBUG
 
-#define GPIO_RELAY          0
+#define GPIO_RELAY          D2
 
 #define ONCE      1
 #define TWICE     2
 #define THRICE    3
 
 // Network information.
-const char * SSID = "OOV52-STH";
+const char * SSID = "DMA";
 const char * PWD  = "1123581321";
 
 int relayState;
@@ -134,6 +134,7 @@ void setup()
 
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(GPIO_RELAY, OUTPUT);
 
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, LOW);
