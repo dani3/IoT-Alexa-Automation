@@ -1,9 +1,12 @@
 #ifndef DEFINES_H
-#define DEFINE_H
+#define DEFINES_H
 
 #define DEBUG
 
-#define GPIO_RELAY      D2
+#define GPIO_PHOTORESISTOR      A0
+#define GPIO_RELAY              D2
+
+#define LIGHT_THRESHOLD         768
 
 #define ONCE      1
 #define TWICE     2
