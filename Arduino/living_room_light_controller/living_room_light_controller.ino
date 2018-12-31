@@ -1,8 +1,11 @@
-// Load Wi-Fi library.
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-
-#define DEBUG
+#include <WiFiUdp.h>
+#include <functional>
+#include "switch.h"
+#include "UpnpBroadcastResponder.h"
+#include "CallbackFunction.h"
+#include "Utils.h"
 
 #define GPIO_RELAY          D2
 
@@ -10,128 +13,91 @@
 #define TWICE     2
 #define THRICE    3
 
-// Network information.
-const char * SSID = "DMA";
-const char * PWD  = "1123581321";
+// Prototypes
+boolean _connectToWiFi();
 
-int relayState;
+// On/Off callbacks 
+bool toggleLight();
 
-bool _wifiConnected;
-bool _serverStarted;
+// Change this before you flash
+const char* SSID = "DMA";
+const char* PWD = "1123581321";
 
-// Set web server port number to 80.
-ESP8266WebServer server(80);
+boolean _wifiConnected;
 
-void _quickLEDFlashing(int times)
+UpnpBroadcastResponder upnpBroadcastResponder;
+
+// Switches attached to this node
+Switch* livingRoomSwitch = NULL;
+
+// State of each switch
+boolean isLivingRoomLightsOn;
+
+bool toggleLight() 
 {
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(50);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(25);
+    Serial.println("Toggling lights ...");
+    
+    isLivingRoomLightsOn = !isLivingRoomLightsOn;   
 
-  if (times == ONCE) return;
+    digitalWrite(GPIO_RELAY, isLivingRoomLightsOn);
 
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(50);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(25);
-
-  if (times == TWICE) return;
-
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(50);
-  digitalWrite(LED_BUILTIN, HIGH);
+    return isLivingRoomLightsOn;
 }
 
-void _connectToWiFi()
+// Connect to wifi – returns true if successful or false if not
+boolean _connectToWiFi()
 {
-  // WiFi setup
-#ifdef DEBUG
   Serial.print("Connecting to ");
   Serial.println(SSID);
-#endif
 
+  boolean state = true;
+  int retries = 0;
+  
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PWD);
-  while (WiFi.status() != WL_CONNECTED)
+  while (WiFi.status() != WL_CONNECTED) 
   {
-    _quickLEDFlashing(ONCE);
+    Utils::quickLEDFlashing(ONCE);
+
+    if (retries > 10)
+    {
+      state = false;
+      break;
+    }
+
+    retries++;
 
     delay(500);
 
-#ifdef DEBUG
     Serial.print(".");
-#endif
   }
-
-  // Let people know we're connected!
-  _quickLEDFlashing(THRICE);
-
-#ifdef DEBUG
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("MAC address: ");
-  Serial.println(WiFi.macAddress());
-#endif
-}
-
-void _startHTTPServer()
-{
-  server.on("/toggleLight", HTTP_GET, []()
-  {
-#ifdef DEBUG
-    Serial.println("Got Request to toggle the light ...\n");
-#endif
-
-    _quickLEDFlashing(ONCE);
-
-    _toggleRelay();
-
-    server.send(200, "text/plain", "Done");
-  });
-
-  server.on("/getStatus", HTTP_GET, []()
-  {
-#ifdef DEBUG
-    Serial.println("Got Request to get the status ...\n");
-#endif
-
-    _quickLEDFlashing(ONCE);
-
-    float humidity = 32.0f;
-    float temperature = 21.3f;
-
-    String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
-    String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
-
-    String status = temperatureStr + humidityStr;
-
-    server.send(200, "text/plain", status);
-  });
-
-  server.begin();
-
-#ifdef DEBUG
-  Serial.println("HTTP Server started!");
-#endif
-}
-
-void _toggleRelay()
-{
-  relayState = (relayState == LOW) ? HIGH : LOW;
   
-  digitalWrite(GPIO_RELAY, relayState);
+  if (state)
+  {
+    Serial.println("");
+    Serial.println("WiFi connected.");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("MAC address: ");
+    Serial.println(WiFi.macAddress());
+
+    Utils::quickLEDFlashing(THRICE);
+  }
+  else 
+  {
+    Serial.println("");
+    Serial.println("Connection failed.");
+  }
+  
+  return state;
 }
 
 void setup()
 {
   Serial.begin(9600);
-
-  _wifiConnected = false;
-  _serverStarted = false;
-
+   
+  isLivingRoomLightsOn = false;
+  
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(GPIO_RELAY, OUTPUT);
@@ -139,27 +105,39 @@ void setup()
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, LOW);
 
-  relayState = LOW;
+  // Initialise WiFi connection
+  _wifiConnected = _connectToWiFi();
+  
+  if (_wifiConnected)
+  {
+    upnpBroadcastResponder.beginUdpMulticast();
+    
+    // Define your switches here. Max 10
+    // Format: Alexa invocation name, local port no, on callback, off callback
+    livingRoomSwitch = new Switch("Living room light", 80, toggleLight, toggleLight);
 
-  _connectToWiFi();
-  _startHTTPServer();
+    Serial.println("Adding switches to UPnP broadcast responder");
+
+    upnpBroadcastResponder.addDevice(*livingRoomSwitch);
+  }
 }
-
+ 
 void loop()
 {
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    server.handleClient();
-  }
-  else
-  {
-#ifdef DEBUG
-    Serial.println("WiFi disconnected");
-#endif
+	 if (WiFi.status() == WL_CONNECTED)
+   {
+      upnpBroadcastResponder.serverLoop();
+      
+      livingRoomSwitch->serverLoop();
+	 }
+   else
+   {
+      // Reinitialise WiFi connection
+      _wifiConnected = _connectToWiFi();
 
-    _connectToWiFi();
-    _startHTTPServer();
-  }
-
-  delay(10);
+      if (_wifiConnected)
+      {
+        upnpBroadcastResponder.beginUdpMulticast();
+      }
+   }
 }
