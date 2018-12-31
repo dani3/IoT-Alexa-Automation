@@ -39,10 +39,8 @@ bool toggleLight()
   Serial.println("Toggling lights ...");
   
   isLivingRoomLightsOn = !isLivingRoomLightsOn;   
-    isLivingRoomLightsOn = !isLivingRoomLightsOn;   
-  isLivingRoomLightsOn = !isLivingRoomLightsOn;   
 
-  digitalWrite(GPIO_RELAY, isLivingRoomLightsOn);
+  digitalWrite(GPIO_RELAY, !isLivingRoomLightsOn);
 
   return isLivingRoomLightsOn;
 }
