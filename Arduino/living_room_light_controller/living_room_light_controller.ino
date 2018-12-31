@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "Switch.h"
+#include "LightSensor.h"
 #include "UpnpBroadcastResponder.h"
 #include "CallbackFunction.h"
 #include "Utils.h"
@@ -13,7 +14,8 @@
 boolean _connectToWiFi();
 
 // On/Off callbacks 
-bool toggleLight();
+bool turnOnLight();
+bool turnOffLight();
 
 // Change this before you flash
 const char* SSID = "DMA";
@@ -21,26 +23,56 @@ const char* PWD = "1123581321";
 
 boolean _wifiConnected;
 boolean _switchesInitialized;
+boolean _relayState;
 
-UpnpBroadcastResponder upnpBroadcastResponder;
+UpnpBroadcastResponder _upnpBroadcastResponder;
 
 // Switches attached to this node
-Switch* livingRoomSwitch = NULL;
+Switch * _livingRoomSwitch = NULL;
 
-// State of each switch
-boolean isLivingRoomLightsOn;
+// Light Sensor 
+LightSensor * _lightSensor = NULL;
 
-bool toggleLight() 
+bool turnOnLight()
 {
   #ifdef DEBUG
-    Serial.println("Toggling lights ...");
-  #endif  
-  
-  isLivingRoomLightsOn = !isLivingRoomLightsOn;   
+    Serial.println("Request to turn ON the light ...");
+  #endif 
 
-  digitalWrite(GPIO_RELAY, !isLivingRoomLightsOn);
+  if (_lightSensor->isLightOn())
+  {
+    #ifdef DEBUG
+      Serial.println("Light is already ON ...");
+    #endif 
+  }
+  else
+  {
+    _relayState = !_relayState;
+    digitalWrite(GPIO_RELAY, _relayState);
+  }  
 
-  return isLivingRoomLightsOn;
+  return true;
+}
+
+bool turnOffLight()
+{
+  #ifdef DEBUG
+    Serial.println("Request to turn OFF the light ...");
+  #endif 
+
+  if (!_lightSensor->isLightOn())
+  {
+    #ifdef DEBUG
+      Serial.println("Light is already OFF ...");
+    #endif 
+  }
+  else
+  {
+    _relayState = !_relayState;
+    digitalWrite(GPIO_RELAY, _relayState);
+  }  
+
+  return false;
 }
 
 // Connect to wifi – returns true if successful or false if not
@@ -78,7 +110,6 @@ boolean _connectToWiFi()
   if (state)
   {
     #ifdef DEBUG
-      Serial.println("");
       Serial.println("WiFi connected.");
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
@@ -91,7 +122,6 @@ boolean _connectToWiFi()
   else 
   {
     #ifdef DEBUG
-      Serial.println("");
       Serial.println("Connection failed.");
     #endif
   }
@@ -103,27 +133,31 @@ void setup()
 {
   Serial.begin(9600);
    
-  isLivingRoomLightsOn = false;
   _switchesInitialized = false;
   
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(GPIO_RELAY, OUTPUT);
+  pinMode(GPIO_PHOTORESISTOR, INPUT);
 
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, HIGH);
+
+  _relayState = HIGH;
 
   // Initialise WiFi connection
   _wifiConnected = _connectToWiFi();
   
   if (_wifiConnected)
   {
-    upnpBroadcastResponder.beginUdpMulticast();
+    _upnpBroadcastResponder.beginUdpMulticast();
     
     // Define your switches here. Max 10
     // Format: Alexa invocation name, local port no, on callback, off callback
-    livingRoomSwitch = new Switch("Living room light", 80, toggleLight, toggleLight);
-    upnpBroadcastResponder.addDevice(*livingRoomSwitch);
+    _livingRoomSwitch = new Switch("Living room light", 80, turnOnLight, turnOffLight);
+    _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
+
+    _lightSensor = new LightSensor();
 
     _switchesInitialized = true;
   }
@@ -133,9 +167,9 @@ void loop()
 {
 	 if (WiFi.status() == WL_CONNECTED)
    {
-      upnpBroadcastResponder.serverLoop();
+      _upnpBroadcastResponder.serverLoop();
       
-      livingRoomSwitch->serverLoop();
+      _livingRoomSwitch->serverLoop();
 	 }
    else
    {
@@ -144,12 +178,12 @@ void loop()
 
       if (_wifiConnected)
       {
-        upnpBroadcastResponder.beginUdpMulticast();
+        _upnpBroadcastResponder.beginUdpMulticast();
 
         if (!_switchesInitialized)
         {
-          livingRoomSwitch = new Switch("Living room light", 80, toggleLight, toggleLight);
-          upnpBroadcastResponder.addDevice(*livingRoomSwitch);
+          _livingRoomSwitch = new Switch("Living room light", 80, turnOnLight, turnOffLight);
+          _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
 
           _switchesInitialized = true;
         }
