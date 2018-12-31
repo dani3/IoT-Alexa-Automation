@@ -107,7 +107,7 @@ void setup()
   pinMode(GPIO_RELAY, OUTPUT);
 
   digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(GPIO_RELAY, LOW);
+  digitalWrite(GPIO_RELAY, HIGH);
 
   // Initialise WiFi connection
   _wifiConnected = _connectToWiFi();

@@ -10,6 +10,14 @@ The relay module operates at 5V, however, the NodeMCU operates at 3.3V, so a log
 ## Static IPs
 Once the app has started, it has to ask every device their status, for that it has to know their IP. Although modern routers will likely assign the same IP to a device, its cache might be restored, so next time it's probably that the IP changes. To solve this, we have to add some entries for our devices [assigning](https://www.howtogeek.com/69612/how-to-set-up-static-dhcp-on-your-dd-wrt-router/) their IPs beforehand.
 
+## Alexa Integration
+To send commands to the NodeMCU, Alexa has to discover the device. To do that, the Echo Dot will send a __M-SEARCH__ multicast packet, which has to be responded back with the local port of the device and the UUID. Then, Alexa will ask for the __setup.xml__, which has to contain the device name, some endpoints, etc.
+
+Once this is complete, it's prepared to receive commands. One important note, it looks like you have to send the device state after every `SetBinaryState` request. So, if the ESP node receives a `SetBinaryState` command, it will have to answer with a `GetBinaryState`.
+
+On top of that, it looks that the response has to 'make sense', ie. if a turn on request is received, it has to return '1' in the `GetBinaryState`. Else Alexa will say that the device is not responding or it's malfunctioning.
+
+This will force to know the state of the relay as it can be changed from a manual switch. 
 ___
 
 ## Components
@@ -24,3 +32,4 @@ ___
 * [Static IP assignation](https://www.howtogeek.com/69612/how-to-set-up-static-dhcp-on-your-dd-wrt-router/)
 * [Setting the HTTP server](https://techtutorialsx.com/2016/10/03/esp8266-setting-a-simple-http-webserver/)
 * [Controlling the relay module](https://www.az-delivery.de/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/esp8266-01-relais-mit-website-steuern?ls=en)
+* [WeMo example](https://github.com/kakopappa/arduino-esp8266-alexa-multiple-wemo-switch)
