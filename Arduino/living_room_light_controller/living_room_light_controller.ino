@@ -2,16 +2,12 @@
 #include <ESP8266WebServer.h>
 #include <WiFiUdp.h>
 #include <functional>
-#include "switch.h"
+
+#include "Switch.h"
 #include "UpnpBroadcastResponder.h"
 #include "CallbackFunction.h"
 #include "Utils.h"
-
-#define GPIO_RELAY          D2
-
-#define ONCE      1
-#define TWICE     2
-#define THRICE    3
+#include "Defines.h"
 
 // Prototypes
 boolean _connectToWiFi();
@@ -36,7 +32,9 @@ boolean isLivingRoomLightsOn;
 
 bool toggleLight() 
 {
-  Serial.println("Toggling lights ...");
+  #ifdef DEBUG
+    Serial.println("Toggling lights ...");
+  #endif  
   
   isLivingRoomLightsOn = !isLivingRoomLightsOn;   
 
@@ -48,8 +46,10 @@ bool toggleLight()
 // Connect to wifi – returns true if successful or false if not
 boolean _connectToWiFi()
 {
-  Serial.print("Connecting to ");
-  Serial.println(SSID);
+  #ifdef DEBUG
+    Serial.print("Connecting to ");
+    Serial.println(SSID);
+  #endif
 
   boolean state = true;
   int retries = 0;
@@ -70,24 +70,30 @@ boolean _connectToWiFi()
 
     delay(500);
 
-    Serial.print(".");
+    #ifdef DEBUG
+      Serial.print(".");
+    #endif
   }
   
   if (state)
   {
-    Serial.println("");
-    Serial.println("WiFi connected.");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("MAC address: ");
-    Serial.println(WiFi.macAddress());
+    #ifdef DEBUG
+      Serial.println("");
+      Serial.println("WiFi connected.");
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.print("MAC address: ");
+      Serial.println(WiFi.macAddress());
+    #endif
 
     Utils::quickLEDFlashing(THRICE);
   }
   else 
   {
-    Serial.println("");
-    Serial.println("Connection failed.");
+    #ifdef DEBUG
+      Serial.println("");
+      Serial.println("Connection failed.");
+    #endif
   }
   
   return state;

@@ -1,13 +1,11 @@
+#include <functional>
+
 #include "UpnpBroadcastResponder.h"
 #include "Switch.h"
 #include "Utils.h"
-#include <functional>
- 
-#define MAX_SWITCHES 14
+#include "Defines.h"
 
-#define ONCE      1
-#define TWICE     2
-#define THRICE    3
+#define MAX_SWITCHES 14
 
 // Multicast declarations
 IPAddress ipMulti(239, 255, 255, 250);
@@ -25,20 +23,26 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
 {
   boolean state = false;
   
-  Serial.println("Beginning multicast ...");
+  #ifdef DEBUG
+    Serial.println("Beginning multicast ...");
+  #endif
   
-  if (UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti)) 
+  if (_UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti)) 
   {
-    Serial.print("Udp multicast server started at: ");
-    Serial.print(ipMulti);
-    Serial.print(":");
-    Serial.println(portMulti);
+    #ifdef DEBUG
+      Serial.print("Udp multicast _server started at: ");
+      Serial.print(ipMulti);
+      Serial.print(":");
+      Serial.println(portMulti);
+    #endif
 
     state = true;
   }
   else
   {
-    Serial.println("Connection failed");
+    #ifdef DEBUG
+      Serial.println("Connection failed");
+    #endif
   }
   
   return state;
@@ -46,27 +50,29 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
 
 void UpnpBroadcastResponder::addDevice(Switch& device) 
 {
-  Serial.print("Adding switch: ");
-  Serial.print(device.getAlexaInvokeName());
-  Serial.print("  Index: ");
-  Serial.println(numOfSwitches);
+  #ifdef DEBUG
+    Serial.print("Adding switch: ");
+    Serial.print(device.getAlexaInvokeName());
+    Serial.print("  Index: ");
+    Serial.println(numOfSwitches);
+  #endif
   
   switches[numOfSwitches++] = device;
 }
 
 void UpnpBroadcastResponder::serverLoop()
 {
-  int packetSize = UDP.parsePacket();
+  int packetSize = _UDP.parsePacket();
   if (packetSize <= 0)
   {
     return;
   }
   
-  IPAddress senderIP = UDP.remoteIP();
-  unsigned int senderPort = UDP.remotePort();
+  IPAddress senderIP = _UDP.remoteIP();
+  unsigned int senderPort = _UDP.remotePort();
   
   // Read the packet into the buffer
-  UDP.read(packetBuffer, packetSize);
+  _UDP.read(packetBuffer, packetSize);
   
   // Check if this is a M-SEARCH for WeMo device
   String request = String((char *) packetBuffer);
@@ -77,11 +83,13 @@ void UpnpBroadcastResponder::serverLoop()
     {      
       Utils::quickLEDFlashing(ONCE);
 
-      Serial.println("Got UDP Belkin Request ...");
+      #ifdef DEBUG
+        Serial.println("Got _UDP Belkin Request ...");
+      #endif
     
       for (int n = 0; n < numOfSwitches; n++) 
       {
-          Switch &sw = switches[n];
+        Switch &sw = switches[n];
 
         if (&sw != NULL) 
         {

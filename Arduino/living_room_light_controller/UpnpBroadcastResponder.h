@@ -4,12 +4,13 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUDP.h>
+
 #include "Switch.h"
 
 class UpnpBroadcastResponder 
 {
     private:
-        WiFiUDP UDP;  
+        WiFiUDP _UDP;  
         
     public:
         UpnpBroadcastResponder();

@@ -5,24 +5,25 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiUDP.h>
+
 #include "CallbackFunction.h"
  
 class Switch 
 {
     private:
-        ESP8266WebServer *server = NULL;
-        WiFiUDP UDP;
+        ESP8266WebServer * _server = NULL;
+        WiFiUDP _UDP;
 
-        String serial;
-        String persistenUUID;
-        String deviceName;
+        String _serialNumber;
+        String _persistenUUID;
+        String _deviceName;
 
-        unsigned int localPort;
+        unsigned int _localPort;
 
-        CallbackFunction onCallback;
-        CallbackFunction offCallback;
+        CallbackFunction _onCallback;
+        CallbackFunction _offCallback;
 
-        bool switchStatus;
+        bool _lightStatus;
           
         void _startWebServer();
         void _handleEventservice();

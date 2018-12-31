@@ -1,5 +1,8 @@
-#include "Utils.h"
 #include <functional>
+
+#include "Arduino.h"
+#include "Utils.h"
+#include "Defines.h"
 
 void Utils::quickLEDFlashing(int times)
 {

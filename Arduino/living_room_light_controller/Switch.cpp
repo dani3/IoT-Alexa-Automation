@@ -1,19 +1,18 @@
 #include "Switch.h"
 #include "CallbackFunction.h"
 #include "Utils.h"
-
-#define ONCE      1
-#define TWICE     2
-#define THRICE    3
+#include "Defines.h"
         
 Switch::Switch()
 {
+  #ifdef DEBUG
     Serial.println("default constructor called");
+  #endif
 }
 
-Switch::Switch(String alexaInvokeName, unsigned int port, CallbackFunction oncb, CallbackFunction offcb)
+Switch::Switch(String alexaInvokeName, unsigned int port, CallbackFunction onCallback, CallbackFunction offCallback)
 {
-  switchStatus = false;
+  _lightStatus = false;
 
   uint32_t chipId = ESP.getChipId();
   char uuid[64];
@@ -23,13 +22,13 @@ Switch::Switch(String alexaInvokeName, unsigned int port, CallbackFunction oncb,
     , (uint16_t) ((chipId >>  8) & 0xff)
     , (uint16_t)   chipId        & 0xff);
   
-  serial = String(uuid);
-  persistenUUID = "Socket-1_0-" + serial+"-"+ String(port);
+  _serialNumber = String(uuid);
+  _persistenUUID = "Socket-1_0-" + _serialNumber + "-" + String(port);
       
-  deviceName = alexaInvokeName;
-  localPort = port;
-  onCallback = oncb;
-  offCallback = offcb;
+  _deviceName = alexaInvokeName;
+  _localPort = port;
+  _onCallback = onCallback;
+  _offCallback = offCallback;
     
   _startWebServer();
 }
@@ -38,59 +37,63 @@ Switch::~Switch() {}
 
 void Switch::serverLoop()
 {
-  if (server != NULL) 
+  if (_server != NULL) 
   {
-    server->handleClient();
+    _server->handleClient();
     delay(1);
   }
 }
 
 void Switch::_startWebServer()
 {
-  server = new ESP8266WebServer(localPort);
+  _server = new ESP8266WebServer(_localPort);
 
-  server->on("/", [&]() 
+  _server->on("/", [&]() 
   {
     Utils::quickLEDFlashing(ONCE);
 
     _handleRoot();
   }); 
 
-  server->on("/setup.xml", [&]() 
+  _server->on("/setup.xml", [&]() 
   {
     Utils::quickLEDFlashing(ONCE);
 
     _handleSetupXml();
   });
 
-  server->on("/upnp/control/basicevent1", [&]() 
+  _server->on("/upnp/control/basicevent1", [&]() 
   {
     Utils::quickLEDFlashing(ONCE);
 
     _handleUpnpControl();
   });
 
-  server->on("/eventservice.xml", [&]() 
+  _server->on("/eventservice.xml", [&]() 
   {
     Utils::quickLEDFlashing(ONCE);
 
     _handleEventservice();
   });
 
-  server->on("/toggleLight", [&]()
+  _server->on("/toggleLight", [&]()
   {
-    Serial.println("Got Request to toggle the light ...\n");
+    #ifdef DEBUG
+      Serial.println("Got Request to toggle the light ...\n");
+    #endif
 
     Utils::quickLEDFlashing(ONCE);
 
-    onCallback();
+    _onCallback();
 
-    server->send(200, "text/plain", "Done");
+    _server->send(200, "text/plain", "Done");
   });
 
-  server->on("/getStatus", [&]()
+  _server->on("/getStatus", [&]()
   {
-    Serial.println("Got Request to get the status ...\n");
+    #ifdef DEBUG
+      Serial.println("Got Request to get the status ...\n");
+    #endif
 
     Utils::quickLEDFlashing(ONCE);
 
@@ -102,19 +105,23 @@ void Switch::_startWebServer()
 
     String status = temperatureStr + humidityStr;
 
-    server->send(200, "text/plain", status);
+    _server->send(200, "text/plain", status);
   });
 
-  server->begin();
+  _server->begin();
 
-  Serial.print("WebServer started on port: ");
-  Serial.println(localPort);
+  #ifdef DEBUG
+    Serial.print("WebServer started on port: ");
+    Serial.println(_localPort);
+  #endif
 }
  
 void Switch::_handleEventservice()
 {
-  Serial.println("Responding to eventservice.xml ...\n");
-  
+  #ifdef DEBUG
+    Serial.println("Responding to eventservice.xml ...\n");
+  #endif
+
   String eventserviceXML = 
     "<scpd xmlns=\"urn:Belkin:service-1-0\">"
     "<actionList>"
@@ -156,54 +163,64 @@ void Switch::_handleEventservice()
     "</scpd>\r\n"
     "\r\n";
           
-    server->send(200, "text/plain", eventserviceXML.c_str());
+    _server->send(200, "text/plain", eventserviceXML.c_str());
 }
  
 void Switch::_handleUpnpControl()
 {
-  Serial.println("Responding to /upnp/control/basicevent1 ...");      
+  #ifdef DEBUG
+    Serial.println("Responding to /upnp/control/basicevent1 ...");      
+  #endif
 
-  String request = server->arg(0); 
+  String request = _server->arg(0); 
   if (request.indexOf("SetBinaryState") >= 0) 
   {
     if (request.indexOf("<BinaryState>1</BinaryState>") >= 0) 
     {
+      #ifdef DEBUG
         Serial.println(" - Got Turn on request");
+      #endif
 
-        switchStatus = onCallback();
+      _lightStatus = _onCallback();
 
-        sendRelayState();
+      sendRelayState();
     }
 
     if (request.indexOf("<BinaryState>0</BinaryState>") >= 0) 
     {
+      #ifdef DEBUG
         Serial.println(" - Got Turn off request");
+      #endif
 
-        switchStatus = offCallback();
-        
-        sendRelayState();
+      _lightStatus = _offCallback();
+      
+      sendRelayState();
     }
   }
 
   if (request.indexOf("GetBinaryState") >= 0) 
   {
-    Serial.println(" - Got relay state request");
+    #ifdef DEBUG
+      Serial.println(" - Got relay state request");
+    #endif
 
     sendRelayState();
   }
   
-  server->send(200, "text/plain", "");
+  _server->send(200, "text/plain", "");
 }
 
 void Switch::_handleRoot()
 {
-  server->send(200, "text/plain", "You should tell Alexa to discover devices");
+  _server->send(200, "text/plain", "You should tell Alexa to discover devices");
 }
 
 void Switch::_handleSetupXml()
 {
-  Serial.println("Responding to setup.xml ...\n");
-  
+  #ifdef DEBUG
+    Serial.println("Responding to setup.xml ...\n");
+  #endif
+
   IPAddress localIP = WiFi.localIP();
   char s[16];
   sprintf(s, "%d.%d.%d.%d", localIP[0], localIP[1], localIP[2], localIP[3]);
@@ -213,12 +230,12 @@ void Switch::_handleSetupXml()
     "<root>"
       "<device>"
         "<deviceType>urn:Belkin:device:controllee:1</deviceType>"
-        "<friendlyName>"+ deviceName +"</friendlyName>"
+        "<friendlyName>"+ _deviceName +"</friendlyName>"
         "<manufacturer>Belkin International Inc.</manufacturer>"
         "<modelName>Socket</modelName>"
         "<modelNumber>3.1415</modelNumber>"
         "<modelDescription>Belkin Plugin Socket 1.0</modelDescription>\r\n"
-        "<UDN>uuid:"+ persistenUUID +"</UDN>"
+        "<UDN>uuid:"+ _persistenUUID +"</UDN>"
         "<serialNumber>221517K0101769</serialNumber>"
         "<binaryState>0</binaryState>"
         "<serviceList>"
@@ -234,15 +251,17 @@ void Switch::_handleSetupXml()
     "</root>\r\n"
     "\r\n"; 
         
-    server->send(200, "text/xml", setupXML.c_str());
+    _server->send(200, "text/xml", setupXML.c_str());
     
-    Serial.print(" - Sending: ");
-    Serial.println(setupXML);
+    #ifdef DEBUG
+      Serial.print(" - Sending: ");
+      Serial.println(setupXML);
+    #endif
 }
 
 String Switch::getAlexaInvokeName() 
 {
-  return deviceName;
+  return _deviceName;
 }
 
 void Switch::sendRelayState() 
@@ -252,25 +271,29 @@ void Switch::sendRelayState()
     "<u:GetBinaryStateResponse xmlns:u=\"urn:Belkin:service:basicevent:1\">\r\n"
     "<BinaryState>";
       
-  body += (switchStatus ? "1" : "0");
+  body += (_lightStatus ? "1" : "0");
   
   body += 
     "</BinaryState>\r\n"
     "</u:GetBinaryStateResponse>\r\n"
     "</s:Body> </s:Envelope>\r\n";
   
-  server->send(200, "text/xml", body.c_str());
+  _server->send(200, "text/xml", body.c_str());
 
-  Serial.print("Sending: ");
-  Serial.println(body);
+  #ifdef DEBUG
+    Serial.print("Sending: ");
+    Serial.println(body);
+  #endif
 }
 
 void Switch::respondToSearch(IPAddress& senderIP, unsigned int senderPort) 
 {
-  Serial.print(" - Sending response to ");
-  Serial.println(senderIP);
-  Serial.print("Port : ");
-  Serial.println(senderPort);
+  #ifdef DEBUG
+    Serial.print(" - Sending response to ");
+    Serial.println(senderIP);
+    Serial.print("Port : ");
+    Serial.println(senderPort);
+  #endif
 
   IPAddress localIP = WiFi.localIP();
   char s[16];
@@ -281,19 +304,21 @@ void Switch::respondToSearch(IPAddress& senderIP, unsigned int senderPort)
     "CACHE-CONTROL: max-age=86400\r\n"
     "DATE: Sat, 26 Nov 2016 04:56:29 GMT\r\n"
     "EXT:\r\n"
-    "LOCATION: http://" + String(s) + ":" + String(localPort) + "/setup.xml\r\n"
+    "LOCATION: http://" + String(s) + ":" + String(_localPort) + "/setup.xml\r\n"
     "OPT: \"http://schemas.upnp.org/upnp/1/0/\"; ns=01\r\n"
     "01-NLS: b9200ebb-736d-4b93-bf03-835149d13983\r\n"
     "SERVER: Unspecified, UPnP/1.0, Unspecified\r\n"
     "ST: urn:Belkin:device:**\r\n"
-    "USN: uuid:" + persistenUUID + "::urn:Belkin:device:**\r\n"
+    "USN: uuid:" + _persistenUUID + "::urn:Belkin:device:**\r\n"
     "X-User-Agent: redsonic\r\n\r\n";
 
-  UDP.beginPacket(senderIP, senderPort);
-  UDP.write(response.c_str());
-  UDP.endPacket();
+  _UDP.beginPacket(senderIP, senderPort);
+  _UDP.write(response.c_str());
+  _UDP.endPacket();
 
   yield();      
 
-  Serial.println("Response sent.\n");
+  #ifdef DEBUG
+    Serial.println("Response sent.\n");
+  #endif
 }
