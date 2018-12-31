@@ -24,6 +24,7 @@ const char* SSID = "DMA";
 const char* PWD = "1123581321";
 
 boolean _wifiConnected;
+boolean _switchesInitialized;
 
 UpnpBroadcastResponder upnpBroadcastResponder;
 
@@ -35,13 +36,15 @@ boolean isLivingRoomLightsOn;
 
 bool toggleLight() 
 {
-    Serial.println("Toggling lights ...");
-    
+  Serial.println("Toggling lights ...");
+  
+  isLivingRoomLightsOn = !isLivingRoomLightsOn;   
     isLivingRoomLightsOn = !isLivingRoomLightsOn;   
+  isLivingRoomLightsOn = !isLivingRoomLightsOn;   
 
-    digitalWrite(GPIO_RELAY, isLivingRoomLightsOn);
+  digitalWrite(GPIO_RELAY, isLivingRoomLightsOn);
 
-    return isLivingRoomLightsOn;
+  return isLivingRoomLightsOn;
 }
 
 // Connect to wifi – returns true if successful or false if not
@@ -97,6 +100,7 @@ void setup()
   Serial.begin(9600);
    
   isLivingRoomLightsOn = false;
+  _switchesInitialized = false;
   
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
@@ -115,10 +119,9 @@ void setup()
     // Define your switches here. Max 10
     // Format: Alexa invocation name, local port no, on callback, off callback
     livingRoomSwitch = new Switch("Living room light", 80, toggleLight, toggleLight);
-
-    Serial.println("Adding switches to UPnP broadcast responder");
-
     upnpBroadcastResponder.addDevice(*livingRoomSwitch);
+
+    _switchesInitialized = true;
   }
 }
  
@@ -138,6 +141,14 @@ void loop()
       if (_wifiConnected)
       {
         upnpBroadcastResponder.beginUdpMulticast();
+
+        if (!_switchesInitialized)
+        {
+          livingRoomSwitch = new Switch("Living room light", 80, toggleLight, toggleLight);
+          upnpBroadcastResponder.addDevice(*livingRoomSwitch);
+
+          _switchesInitialized = true;
+        }
       }
    }
 }
