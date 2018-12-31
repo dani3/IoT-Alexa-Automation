@@ -77,6 +77,34 @@ void Switch::_startWebServer()
     _handleEventservice();
   });
 
+  server->on("/toggleLight", [&]()
+  {
+    Serial.println("Got Request to toggle the light ...\n");
+
+    Utils::quickLEDFlashing(ONCE);
+
+    onCallback();
+
+    server->send(200, "text/plain", "Done");
+  });
+
+  server->on("/getStatus", [&]()
+  {
+    Serial.println("Got Request to get the status ...\n");
+
+    Utils::quickLEDFlashing(ONCE);
+
+    float humidity = 32.0f;
+    float temperature = 21.3f;
+
+    String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
+    String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
+
+    String status = temperatureStr + humidityStr;
+
+    server->send(200, "text/plain", status);
+  });
+
   server->begin();
 
   Serial.print("WebServer started on port: ");
@@ -135,15 +163,13 @@ void Switch::_handleUpnpControl()
 {
   Serial.println("Responding to /upnp/control/basicevent1 ...");      
 
-  String request = server->arg(0);      
-  Serial.print(" - Request: ");
-  Serial.println(request);  
-
+  String request = server->arg(0); 
   if (request.indexOf("SetBinaryState") >= 0) 
   {
     if (request.indexOf("<BinaryState>1</BinaryState>") >= 0) 
     {
         Serial.println(" - Got Turn on request");
+
         switchStatus = onCallback();
 
         sendRelayState();
@@ -152,6 +178,7 @@ void Switch::_handleUpnpControl()
     if (request.indexOf("<BinaryState>0</BinaryState>") >= 0) 
     {
         Serial.println(" - Got Turn off request");
+
         switchStatus = offCallback();
         
         sendRelayState();
@@ -160,7 +187,8 @@ void Switch::_handleUpnpControl()
 
   if (request.indexOf("GetBinaryState") >= 0) 
   {
-    Serial.println(" - Got binary state request");
+    Serial.println(" - Got relay state request");
+
     sendRelayState();
   }
   
