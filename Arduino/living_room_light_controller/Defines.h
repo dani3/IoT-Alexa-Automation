@@ -6,7 +6,7 @@
 #define GPIO_PHOTORESISTOR      A0
 #define GPIO_RELAY              D2
 
-#define LIGHT_THRESHOLD         768
+#define LIGHT_THRESHOLD         700
 
 #define ONCE      1
 #define TWICE     2

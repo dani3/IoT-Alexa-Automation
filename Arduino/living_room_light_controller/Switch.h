@@ -6,6 +6,7 @@
 #include <ESP8266WebServer.h>
 #include <WiFiUDP.h>
 
+#include "LightSensor.h"
 #include "CallbackFunction.h"
  
 class Switch 
@@ -22,6 +23,8 @@ class Switch
 
         CallbackFunction _onCallback;
         CallbackFunction _offCallback;
+        
+        LightSensor * _lightSensor;
 
         bool _lightStatus;
           
@@ -33,7 +36,7 @@ class Switch
 
     public:
         Switch();
-        Switch(String alexaInvokeName, unsigned int port, CallbackFunction onCallback, CallbackFunction offCallback);
+        Switch(String alexaInvokeName, unsigned int port, LightSensor * lightSensor, CallbackFunction onCallback, CallbackFunction offCallback);
         ~Switch();
 
         String getAlexaInvokeName();

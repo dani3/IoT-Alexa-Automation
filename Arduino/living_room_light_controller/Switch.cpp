@@ -10,7 +10,7 @@ Switch::Switch()
   #endif
 }
 
-Switch::Switch(String alexaInvokeName, unsigned int port, CallbackFunction onCallback, CallbackFunction offCallback)
+Switch::Switch(String alexaInvokeName, unsigned int port, LightSensor * lightSensor, CallbackFunction onCallback, CallbackFunction offCallback)
 {
   _lightStatus = false;
 
@@ -29,6 +29,7 @@ Switch::Switch(String alexaInvokeName, unsigned int port, CallbackFunction onCal
   _localPort = port;
   _onCallback = onCallback;
   _offCallback = offCallback;
+  _lightSensor = lightSensor;
     
   _startWebServer();
 }
@@ -78,13 +79,16 @@ void Switch::_startWebServer()
 
   _server->on("/toggleLight", [&]()
   {
-    #ifdef DEBUG
-      Serial.println("Got Request to toggle the light ...\n");
-    #endif
-
     Utils::quickLEDFlashing(ONCE);
 
-    _onCallback();
+    if (_lightSensor->isLightOn())
+    {
+      _offCallback();
+    }
+    else
+    {
+      _onCallback();      
+    }
 
     _server->send(200, "text/plain", "Done");
   });
