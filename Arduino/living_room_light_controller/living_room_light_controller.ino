@@ -1,3 +1,11 @@
+/** @file living_room_light_controller.ino
+ *  @brief Main sketch for the ESP8266-12E on the Living room
+ * in charge of controlling the foot lamp.
+ *
+ *  @author Daniel Mancebo
+ *  @bug No known bugs.
+ */
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiUdp.h>
@@ -33,12 +41,17 @@ Switch * _livingRoomSwitch = NULL;
 // Light Sensor 
 LightSensor * _lightSensor = NULL;
 
+/** @brief Turns on the light checking if it's not already.
+ * 
+ * @return true if it's on.
+ */
 bool turnOnLight()
 {
   #ifdef DEBUG
     Serial.println("Request to turn ON the light ...");
   #endif 
 
+  // Check if the light is already on.
   if (_lightSensor->isLightOn())
   {
     #ifdef DEBUG
@@ -47,6 +60,7 @@ bool turnOnLight()
   }
   else
   {
+    // Switch the relay state.
     _relayState = !_relayState;
     digitalWrite(GPIO_RELAY, _relayState);
   }  
@@ -54,6 +68,10 @@ bool turnOnLight()
   return true;
 }
 
+/** @brief Turns off the light checking if it's not already.
+ * 
+ * @return true if it's off.
+ */
 bool turnOffLight()
 {
   #ifdef DEBUG
@@ -75,7 +93,10 @@ bool turnOffLight()
   return false;
 }
 
-// Connect to wifi – returns true if successful or false if not
+/** @brief Connects to the WiFi with a retry mechanism.
+ * 
+ * @return true if succesfully connected, false otherwise.
+ */
 boolean _connectToWiFi()
 {
   #ifdef DEBUG
@@ -129,6 +150,10 @@ boolean _connectToWiFi()
   return state;
 }
 
+/** @brief General setup of the node.
+ * 
+ * @return Void.
+ */
 void setup()
 {
   Serial.begin(9600);
@@ -140,6 +165,7 @@ void setup()
   pinMode(GPIO_RELAY, OUTPUT);
   pinMode(GPIO_PHOTORESISTOR, INPUT);
 
+  // Write a certain state.
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO_RELAY, HIGH);
 
@@ -152,7 +178,7 @@ void setup()
   {
     _upnpBroadcastResponder.beginUdpMulticast();
     
-    // Define your switches here. Max 10
+    // Define your switches here.
     // Format: Alexa invocation name, local port no, on callback, off callback
     _livingRoomSwitch = new Switch("Living room light", 80, turnOnLight, turnOffLight);
     _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
@@ -163,30 +189,37 @@ void setup()
   }
 }
  
+/** @brief Main loop.
+ * 
+ * @return Void.
+ */
 void loop()
 {
-	 if (WiFi.status() == WL_CONNECTED)
-   {
-      _upnpBroadcastResponder.serverLoop();
-      
-      _livingRoomSwitch->serverLoop();
-	 }
-   else
-   {
-      // Reinitialise WiFi connection
-      _wifiConnected = _connectToWiFi();
+  // Check if it's still connected to the WiFi.
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    // Check for some multicast packets. (M-SEARCH mainly)
+    _upnpBroadcastResponder.serverLoop();
 
-      if (_wifiConnected)
+    // Check if it's a command for the lamp.
+    _livingRoomSwitch->serverLoop();
+  }
+  else
+  {
+    // Reinitialise WiFi connection
+    _wifiConnected = _connectToWiFi();
+
+    if (_wifiConnected)
+    {
+      _upnpBroadcastResponder.beginUdpMulticast();
+
+      if (!_switchesInitialized)
       {
-        _upnpBroadcastResponder.beginUdpMulticast();
+        _livingRoomSwitch = new Switch("Living room light", 80, turnOnLight, turnOffLight);
+        _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
 
-        if (!_switchesInitialized)
-        {
-          _livingRoomSwitch = new Switch("Living room light", 80, turnOnLight, turnOffLight);
-          _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
-
-          _switchesInitialized = true;
-        }
+        _switchesInitialized = true;
       }
-   }
+    }
+  }
 }
