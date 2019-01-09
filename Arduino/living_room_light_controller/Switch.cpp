@@ -1,6 +1,7 @@
 #include "Switch.h"
 #include "CallbackFunction.h"
 #include "Utils.h"
+#include "string"
 #include "Defines.h"
         
 Switch::Switch()
@@ -95,21 +96,30 @@ void Switch::_startWebServer()
 
   _server->on("/getStatus", [&]()
   {
-    #ifdef DEBUG
-      Serial.println("Got Request to get the status ...\n");
-    #endif
-
     Utils::quickLEDFlashing(ONCE);
 
-    float humidity = 32.0f;
-    float temperature = 21.3f;
+    _handleGetStatus();    
+  });
 
-    String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
-    String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
+  _server->on("/getLight", [&]()
+  {
+    Utils::quickLEDFlashing(ONCE);
 
-    String status = temperatureStr + humidityStr;
+    _handleGetLight();
+  });
 
-    _server->send(200, "text/plain", status);
+  _server->on("/setLightThreshold", [&]()
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleSetThreshold();    
+  });
+
+  _server->on("/getThreshold", [&]()
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleGetThreshold();    
   });
 
   _server->begin();
@@ -119,7 +129,67 @@ void Switch::_startWebServer()
     Serial.println(_localPort);
   #endif
 }
+
+void Switch::_handleGetStatus()
+{
+#ifdef DEBUG
+  Serial.println("Got Request to get the status ...\n");
+#endif
+
+  float humidity = 32.0f;
+  float temperature = 21.3f;
+
+  String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
+  String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
+
+  String status = temperatureStr + humidityStr;
+
+  _server->send(200, "text/plain", status);
+}
+
+void Switch::_handleGetLight()
+{
+#ifdef DEBUG
+  Serial.println("Got Request to get the light ...\n");
+#endif
+
+  short light = _lightSensor->getLight();
+
+  String lightStr = String("Light value: " + String(light));
+
+  _server->send(200, "text/plain", lightStr);
+}
+
+void Switch::_handleGetThreshold()
+{
+#ifdef DEBUG
+  Serial.println("Got Request to get the light threshold ...\n");
+#endif
+
+  short light = _lightSensor->getThreshold();
+
+  String lightStr = String("Threshold value: " + String(light));
+
+  _server->send(200, "text/plain", lightStr);
+}
  
+void Switch::_handleSetThreshold()
+{
+#ifdef DEBUG
+  Serial.print("Got Request to set the light threshold to : ");
+  Serial.println(_server->arg("Threshold"));
+  Serial.println("");
+#endif
+
+  if (_server->arg("Threshold") != "")
+  {
+    short value = strtoul(_server->arg("Threshold").c_str(), NULL, 10);
+    _lightSensor->setThreshold(value);
+  }
+
+  _server->send(200, "text/plain", "Done");
+}
+
 void Switch::_handleEventservice()
 {
   #ifdef DEBUG

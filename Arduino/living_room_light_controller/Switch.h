@@ -33,6 +33,10 @@ class Switch
         void _handleUpnpControl();
         void _handleRoot();
         void _handleSetupXml();
+        void _handleGetStatus();
+        void _handleGetLight();
+        void _handleSetThreshold();
+        void _handleGetThreshold();
 
     public:
         Switch();
