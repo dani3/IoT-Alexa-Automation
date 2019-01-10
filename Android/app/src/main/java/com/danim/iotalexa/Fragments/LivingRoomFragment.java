@@ -37,7 +37,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private AtomicInteger mDevicesConnected;
     private AtomicBoolean mErrorWithDevice;
 
-    private String mUrlFootLamp;
     private LivingRoomStatus mLivingRoomStatus;
 
     private ScaleAnimation mPulseAnimation;
@@ -45,7 +44,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private TextView mTemperatureTextView;
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
-    private ImageView mCeilingLampImageView;
     private ImageView mFootLampImageView;
     private ProgressBar mTemperatureProgressBar;
 
@@ -55,8 +53,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
     public LivingRoomFragment()
     {
-        mUrlFootLamp = Constants.LIVING_ROOM_FOOT_LAMP_IP + Constants.GET_STATUS;
-
         mLivingRoomStatus = new LivingRoomStatus();
 
         mDevicesConnected = new AtomicInteger(0);
@@ -77,13 +73,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View ceilingLampContainer = fragment.findViewById(R.id.living_room_ceiling_lamp_container);
         View footLampContainer = fragment.findViewById(R.id.living_room_foot_lamp_container);
 
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
-        mCeilingLampImageView     = fragment.findViewById(R.id.living_room_ceiling_lamp_image);
         mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
         mContainer                = fragment.findViewById(R.id.living_room_container);
@@ -94,21 +88,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mErrorTextView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
 
-        ceilingLampContainer.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                //_toggleLamp(mCeilingLampImageView, true);
-            }
-        });
-
         footLampContainer.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                _toggleLamp(mFootLampImageView, false);
+                _toggleLamp(mFootLampImageView);
             }
         });
 
@@ -127,47 +112,15 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(Constants.TAG, "Connecting to: " + mUrlFootLamp);
+        mErrorWithDevice.set(false);
 
-        StringRequest footLampRequest = new StringRequest(mUrlFootLamp, new Response.Listener<String>()
+        mLivingRoomStatus.setTemperature(22.5f);
+        mLivingRoomStatus.setHumidity(34);
+
+        if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
         {
-            @Override
-            public void onResponse(String response)
-            {
-                String[] lines = response.split("\n");
-
-                float temperature = Float.parseFloat(lines[0].substring(lines[0].indexOf(" ") + 1));
-                float humidity = Float.parseFloat(lines[1].substring(lines[1].indexOf(" ") + 1));
-
-                Log.d(Constants.TAG, "Temperature: " + temperature);
-                Log.d(Constants.TAG, "Humidity: " + humidity);
-
-                mLivingRoomStatus.setTemperature(temperature);
-                mLivingRoomStatus.setHumidity((int) humidity);
-
-                if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
-                {
-                    _initializeViews();
-                }
-            }
+            _initializeViews();
         }
-        , new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
-
-                mErrorWithDevice.set(true);
-
-                if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
-                {
-                    _initializeViews();
-                }
-            }
-        });
-
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(footLampRequest);
     }
 
     /**
@@ -202,14 +155,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     }
 
     /**
-     * Function to control the lamps.
+     * Function to control the foot lamp.
      */
-    private void _toggleLamp(final ImageView lamp, final boolean ceilingLamp)
+    private void _toggleLamp(final ImageView lamp)
     {
-        // TODO: add the other lamp
-        String url = (!ceilingLamp)
-                ? Constants.LIVING_ROOM_FOOT_LAMP_IP + Constants.TOGGLE_LIGHT
-                : null;
+        String url = Constants.NODEV1_IP + Constants.TOGGLE_LIGHT;
 
         Log.d(Constants.TAG, "Connecting to: " + url);
 
@@ -242,14 +192,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             }
         });
 
-        if (ceilingLamp)
-        {
-            mCeilingLampImageView.startAnimation(mPulseAnimation);
-        }
-        else
-        {
-            mFootLampImageView.startAnimation(mPulseAnimation);
-        }
+        mFootLampImageView.startAnimation(mPulseAnimation);
 
         VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
