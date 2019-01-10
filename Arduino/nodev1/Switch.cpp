@@ -94,13 +94,6 @@ void Switch::_startWebServer()
     _server->send(200, "text/plain", "Done");
   });
 
-  _server->on("/getStatus", [&]()
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleGetStatus();    
-  });
-
   _server->on("/getLight", [&]()
   {
     Utils::quickLEDFlashing(ONCE);
@@ -128,23 +121,6 @@ void Switch::_startWebServer()
     Serial.print("WebServer started on port: ");
     Serial.println(_localPort);
   #endif
-}
-
-void Switch::_handleGetStatus()
-{
-#ifdef DEBUG
-  Serial.println("Got Request to get the status ...\n");
-#endif
-
-  float humidity = 32.0f;
-  float temperature = 21.3f;
-
-  String temperatureStr = String("Temperature: ") + String(temperature) + String("\n");
-  String humidityStr = String("Humidity: ") + String(humidity) + String("\n");
-
-  String status = temperatureStr + humidityStr;
-
-  _server->send(200, "text/plain", status);
 }
 
 void Switch::_handleGetLight()

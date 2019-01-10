@@ -1,4 +1,4 @@
-/** @file living_room_light_controller.ino
+/** @file nodev1.ino
  *  @brief Main sketch for the ESP8266-12E on the Living room
  * in charge of controlling the foot lamp.
  *
