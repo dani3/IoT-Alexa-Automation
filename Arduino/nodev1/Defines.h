@@ -1,7 +1,7 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define DEBUG
+//#define DEBUG
 
 #define GPIO_PHOTORESISTOR      A0
 #define GPIO_RELAY              D2
