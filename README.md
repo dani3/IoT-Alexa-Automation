@@ -20,6 +20,16 @@ The idea is to have an ESP8266 controlling each individual device that will rece
         * 3-way switch
         * 220V/5V Power supply
 
+* `nodev2`:
+    * Controller: `ESP8266-12E`
+    * IP: TBD
+    * Alexa invoke name: `Ambient lights`
+    * Componentes:
+        * 4M + 3M Led strips
+        * 10A - 5V Power supply
+        * 5A - 5V Power supply
+        * Logic level shifter
+
 ## Alexa Integration
 
 To send commands to the NodeMCU, Alexa has to discover the device. To do that, the Echo Dot will send a __M-SEARCH__ multicast packet, which has to be responded back with the local port of the device and the UUID. Then, Alexa will ask for the __setup.xml__, which has to contain the device name, some endpoints, etc.
