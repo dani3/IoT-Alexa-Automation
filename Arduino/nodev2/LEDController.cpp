@@ -7,7 +7,7 @@ LEDController::LEDController(int pin, int numLeds, int indexController, int brig
 {
     _leds = new CRGB[numLeds];
 
-    FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, numLeds).setCorrection(TypicalLEDStrip);
 
     _index = indexController;
     _brightness = brightness;
@@ -50,8 +50,7 @@ void LEDController::fadeIn(byte red, byte green, byte blue)
 
         _setAll(r, g, b);
 
-        _showStrip();
-        delay(5);
+        delay(1);
     }
 }
 
@@ -66,9 +65,9 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
     int leftRN;
     int leftLN;
 
-    byte redL   = red / 10;
-    byte greenL = green / 10;
-    byte blueL  = blue / 10;
+    byte redL   = red / 2;
+    byte greenL = green / 2;
+    byte blueL  = blue / 2;
 
     // Turn off the LEDs
     _setAll(0x00, 0x00, 0x00);
@@ -79,7 +78,7 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
     _setPixel(left, redL, greenL, blueL);
 
     _showStrip();
-    delay(20);
+    delay(3);
 
     // Stop before reaching the last LED.
     for (int i = 0; i < (_numLeds / 2) - 2; ++i)
@@ -104,7 +103,7 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
         _setPixel(leftLN, redL, greenL, blueL);
 
         _showStrip();
-        delay(20);
+        delay(3);
     }
 
     right = endLED + 1;
@@ -116,10 +115,10 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
     _setPixel(left, redL, greenL, blueL);
 
     _showStrip();
-    delay(20);
+    delay(3);
 
     float r, g, b;
-    for (int k = 127; k >= 12; k++)
+    for (int k = 127; k < 64; k++)
     {
         r = (k / 128.f) * red;
         g = (k / 128.f) * green;

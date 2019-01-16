@@ -6,9 +6,7 @@ LEDController _tvLedController;
 
 void setup() 
 {
-  _tvLedController = LEDController(TV_LED_STRIP_PIN, NUM_LEDS, TV_LED_STRIP_INDEX, TV_LED_STRIP_BRIGHTNESS);
-
-  _tvLedController.fadeIn(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+  _tvLedController = LEDController(TV_LED_STRIP_PIN, TV_LED_STRIP_NUM_LEDS, TV_LED_STRIP_INDEX, TV_LED_STRIP_BRIGHTNESS);
 }
 
 void loop() 

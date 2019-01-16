@@ -4,9 +4,13 @@
 #define DEBUG
 
 // Colours
-#define LIGHT_YELLOW_R    0xFF
-#define LIGHT_YELLOW_G    0xCC
-#define LIGHT_YELLOW_B    0x20
+#define LIGHT_YELLOW_R      0xFF
+#define LIGHT_YELLOW_G      0xCC
+#define LIGHT_YELLOW_B      0x20
+
+#define LIGHT_BLUE_R        0x7A
+#define LIGHT_BLUE_G        0xDB
+#define LIGHT_BLUE_B        0xFF
 
 // Misc
 #define ONCE      1
@@ -28,7 +32,7 @@
 #define TV_LED_STRIP_INDEX            0
 
 // LED strips brightness
-#define TV_LED_STRIP_BRIGHTNESS     180
+#define TV_LED_STRIP_BRIGHTNESS     150
 
 // Animation values
 #define WRAP_START_LED              194
