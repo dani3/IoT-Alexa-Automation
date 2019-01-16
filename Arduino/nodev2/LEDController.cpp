@@ -11,30 +11,31 @@ LEDController::LEDController(int pin, int numLeds, int indexController, int brig
 
     _index = indexController;
     _brightness = brightness;
+    _numLeds = numLeds;
 }
         
 LEDController::~LEDController() {}
 
-void LEDController::showStrip()
+void LEDController::_showStrip()
 {
     FastLED[_index].showLeds(_brightness);
 }
 
-void LEDController::setPixel(int pixel, byte red, byte green, byte blue) 
+void LEDController::_setPixel(int pixel, byte red, byte green, byte blue) 
 {
     _leds[pixel].r = red;
     _leds[pixel].g = green;
     _leds[pixel].b = blue;
 }
 
-void LEDController::setAll(byte red, byte green, byte blue) 
+void LEDController::_setAll(byte red, byte green, byte blue) 
 {
-    for (int i = 0; i < NUM_LEDS; i++) 
+    for (int i = 0; i < _numLeds; i++) 
     {
-        setPixel(i, red, green, blue); 
+        _setPixel(i, red, green, blue); 
     }
 
-    showStrip();
+    _showStrip();
 }
 
 void LEDController::fadeIn(byte red, byte green, byte blue)
@@ -47,9 +48,88 @@ void LEDController::fadeIn(byte red, byte green, byte blue)
         g = (k / 256.f) * green;
         b = (k / 256.f) * blue;
 
-        setAll(r, g, b);
+        _setAll(r, g, b);
 
-        showStrip();
-        delay(10);
+        _showStrip();
+        delay(5);
     }
+}
+
+void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endLED)
+{
+    int right = startLED + 1;
+    int left  = startLED - 1;
+
+    // Adjacent neighbours
+    int rightRN;
+    int rightLN;
+    int leftRN;
+    int leftLN;
+
+    byte redL   = red / 10;
+    byte greenL = green / 10;
+    byte blueL  = blue / 10;
+
+    // Turn off the LEDs
+    _setAll(0x00, 0x00, 0x00);
+
+    // Set the first pixel to HIGH and the adjacents to LOW.
+    _setPixel(startLED, red, green, blue);
+    _setPixel(right, redL, greenL, blueL);
+    _setPixel(left, redL, greenL, blueL);
+
+    _showStrip();
+    delay(20);
+
+    // Stop before reaching the last LED.
+    for (int i = 0; i < (_numLeds / 2) - 2; ++i)
+    {
+        // Make sure we stay on the limits
+        right = (right + 1 >= _numLeds) ? 0 : right + 1;
+        left = (left - 1 < 0) ? _numLeds - 1 : left - 1;
+
+        rightRN = (right + 1 >= _numLeds) ? 0 : right + 1;
+        rightLN = (right - 1 < 0) ? _numLeds - 1 : right - 1;
+
+        leftRN = (left + 1 >= _numLeds) ? 0 : left + 1;
+        leftLN = (left - 1 < 0) ? _numLeds - 1 : left - 1;
+
+        _setPixel(right, red, green, blue);
+        _setPixel(left, red, green, blue);
+        
+        _setPixel(rightRN, redL, greenL, blueL);
+        _setPixel(rightLN, redL, greenL, blueL);
+        
+        _setPixel(leftRN, redL, greenL, blueL);
+        _setPixel(leftLN, redL, greenL, blueL);
+
+        _showStrip();
+        delay(20);
+    }
+
+    right = endLED + 1;
+    left  = endLED - 1;
+
+    // Set the first pixel to HIGH and the adjacents to LOW.
+    _setPixel(endLED, red, green, blue);
+    _setPixel(right, redL, greenL, blueL);
+    _setPixel(left, redL, greenL, blueL);
+
+    _showStrip();
+    delay(20);
+
+    float r, g, b;
+    for (int k = 127; k >= 12; k++)
+    {
+        r = (k / 128.f) * red;
+        g = (k / 128.f) * green;
+        b = (k / 128.f) * blue;
+
+        _setPixel(endLED, r, g, b);
+
+        _showStrip();
+        delay(1);
+    } 
+
+    _setPixel(endLED, redL, greenL, blueL);
 }
