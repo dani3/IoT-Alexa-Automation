@@ -4,7 +4,10 @@
 #define DEBUG
 
 // Alexa invoke name
-#define NODE_NAME     "Ambient lights"
+#define AMBILIGHT_NODE_NAME     "Ambilight"
+
+// Controller ports
+#define AMBILIGHT_PORT        80
 
 // Colours
 #define LIGHT_YELLOW_R      0xFF

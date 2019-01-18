@@ -151,8 +151,8 @@ void setup()
     // Define your switches here.
     // Format: Alexa invocation name, local port no, on callback, off callback
     _tvLedController = new LEDController(
-        NODE_NAME
-      , 80
+        AMBILIGHT_NODE_NAME
+      , AMBILIGHT_PORT
       , turnOnTVAmbientLight
       , turnOffTVAmbientLight
       , TV_LED_STRIP_PIN
@@ -190,21 +190,24 @@ void loop()
     {
       _upnpBroadcastResponder.beginUdpMulticast();
 
-      // Define your switches here.
-      // Format: Alexa invocation name, local port no, on callback, off callback
-      _tvLedController = new LEDController(
-          NODE_NAME
-        , 80
-        , turnOnTVAmbientLight
-        , turnOffTVAmbientLight
-        , TV_LED_STRIP_PIN
-        , TV_LED_STRIP_NUM_LEDS
-        , TV_LED_STRIP_INDEX
-        , TV_LED_STRIP_BRIGHTNESS);
+      if (!_controllersInitialized)
+      {
+        // Define your switches here.
+        // Format: Alexa invocation name, local port no, on callback, off callback
+        _tvLedController = new LEDController(
+            AMBILIGHT_NODE_NAME
+          , AMBILIGHT_PORT
+          , turnOnTVAmbientLight
+          , turnOffTVAmbientLight
+          , TV_LED_STRIP_PIN
+          , TV_LED_STRIP_NUM_LEDS
+          , TV_LED_STRIP_INDEX
+          , TV_LED_STRIP_BRIGHTNESS);
 
-      _upnpBroadcastResponder.addDevice(*_tvLedController);
+        _upnpBroadcastResponder.addDevice(*_tvLedController);
 
-      _controllersInitialized = true;
+        _controllersInitialized = true;
+      }
     }
   }
 }
