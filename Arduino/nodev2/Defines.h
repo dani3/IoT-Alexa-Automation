@@ -3,6 +3,9 @@
 
 #define DEBUG
 
+// Alexa invoke name
+#define NODE_NAME     "Ambient lights"
+
 // Colours
 #define LIGHT_YELLOW_R      0xFF
 #define LIGHT_YELLOW_G      0xCC

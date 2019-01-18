@@ -1,20 +1,76 @@
 #include "LEDController.h"
+#include "CallbackFunction.h"
+#include "Utils.h"
+#include "string"
 #include "Defines.h"
 
-LEDController::LEDController() {}
+LEDController::LEDController() : Wemo() {}
 
-LEDController::LEDController(int pin, int numLeds, int indexController, int brightness)
+LEDController::LEDController(
+    String alexaInvokeName
+  , unsigned int port
+  , CallbackFunction onCallback
+  , CallbackFunction offCallback
+  , int pin
+  , int numLeds
+  , int indexController
+  , int brightness)
+  : Wemo(alexaInvokeName, port, onCallback, offCallback)
 {
     _leds = new CRGB[numLeds];
 
-    FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, numLeds).setCorrection(TypicalLEDStrip);
-
-    _index = indexController;
+    _index      = indexController;
     _brightness = brightness;
-    _numLeds = numLeds;
+    _numLeds    = numLeds;
+
+    _tvLEDsState = false;
+
+    FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
+
+    _startWebServer();
 }
         
 LEDController::~LEDController() {}
+
+void LEDController::_startWebServer()
+{
+  _server = new ESP8266WebServer(_localPort);
+
+  _server->on("/", [&]() 
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleRoot();
+  }); 
+
+  _server->on("/setup.xml", [&]() 
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleSetupXml();
+  });
+
+  _server->on("/upnp/control/basicevent1", [&]() 
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleUpnpControl();
+  });
+
+  _server->on("/eventservice.xml", [&]() 
+  {
+    Utils::quickLEDFlashing(ONCE);
+
+    _handleEventservice();
+  });
+
+  _server->begin();
+
+  #ifdef DEBUG
+    Serial.print("WebServer started on port: ");
+    Serial.println(_localPort);
+  #endif
+}
 
 void LEDController::_showStrip()
 {
@@ -47,6 +103,22 @@ void LEDController::fadeIn(byte red, byte green, byte blue)
         r = (k / 256.f) * red;
         g = (k / 256.f) * green;
         b = (k / 256.f) * blue;
+
+        _setAll(r, g, b);
+
+        delay(1);
+    }
+}
+
+void LEDController::fadeOut(byte red, byte green, byte blue)
+{
+    float r, g, b;
+        
+    for (int k = 255; k >= 0; k++) 
+    { 
+        r = (k / 255.f) * red;
+        g = (k / 255.f) * green;
+        b = (k / 255.f) * blue;
 
         _setAll(r, g, b);
 
@@ -131,4 +203,9 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
     } 
 
     _setPixel(endLED, redL, greenL, blueL);
+}
+
+bool LEDController::isLightOn()
+{
+    return _tvLEDsState;
 }
