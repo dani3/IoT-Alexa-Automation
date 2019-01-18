@@ -1,7 +1,9 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//#define DEBUG
+#define DEBUG
+
+#define NODE_NAME     "Living room light"
 
 #define GPIO_PHOTORESISTOR      A0
 #define GPIO_RELAY              D2

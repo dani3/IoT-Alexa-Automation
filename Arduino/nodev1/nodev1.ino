@@ -182,7 +182,7 @@ void setup()
     
     // Define your switches here.
     // Format: Alexa invocation name, local port no, on callback, off callback
-    _livingRoomSwitch = new Switch("Living room light", 80, _lightSensor, turnOnLight, turnOffLight);
+    _livingRoomSwitch = new Switch(NODE_NAME, 80, _lightSensor, turnOnLight, turnOffLight);
     _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
 
     _switchesInitialized = true;
@@ -217,7 +217,7 @@ void loop()
       {
         _lightSensor = new LightSensor();
         
-        _livingRoomSwitch = new Switch("Living room light", 80, _lightSensor, turnOnLight, turnOffLight);
+        _livingRoomSwitch = new Switch(NODE_NAME, 80, _lightSensor, turnOnLight, turnOffLight);
         _upnpBroadcastResponder.addDevice(*_livingRoomSwitch);
 
         _switchesInitialized = true;
