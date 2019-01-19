@@ -34,42 +34,58 @@ LEDController::~LEDController() {}
 
 void LEDController::_startWebServer()
 {
-  _server = new ESP8266WebServer(_localPort);
+    _server = new ESP8266WebServer(_localPort);
 
-  _server->on("/", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
+    _server->on("/", [&]() 
+    {
+        Utils::quickLEDFlashing(ONCE);
 
-    _handleRoot();
-  }); 
+        _handleRoot();
+    }); 
 
-  _server->on("/setup.xml", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
+    _server->on("/setup.xml", [&]() 
+    {
+        Utils::quickLEDFlashing(ONCE);
 
-    _handleSetupXml();
-  });
+        _handleSetupXml();
+    });
 
-  _server->on("/upnp/control/basicevent1", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
+    _server->on("/upnp/control/basicevent1", [&]() 
+    {
+        Utils::quickLEDFlashing(ONCE);
 
-    _handleUpnpControl();
-  });
+        _handleUpnpControl();
+    });
 
-  _server->on("/eventservice.xml", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
+    _server->on("/eventservice.xml", [&]() 
+    {
+        Utils::quickLEDFlashing(ONCE);
 
-    _handleEventservice();
-  });
+        _handleEventservice();
+    });
 
-  _server->begin();
+    _server->on("/toggleLight", [&]()
+    {
+        Utils::quickLEDFlashing(ONCE);
 
-  #ifdef DEBUG
-    Serial.print("WebServer started on port: ");
-    Serial.println(_localPort);
-  #endif
+        if (_tvLEDsState)
+        {
+            _offCallback();
+        }
+        else
+        {
+            _onCallback();      
+        }
+
+        _server->send(200, "text/plain", "Done");
+    });
+
+    _server->begin();
+
+    #ifdef DEBUG
+        Serial.print("WebServer started on port: ");
+        Serial.println(_localPort);
+    #endif
 }
 
 void LEDController::_showStrip()
@@ -108,13 +124,15 @@ void LEDController::fadeIn(byte red, byte green, byte blue)
 
         delay(1);
     }
+
+    _tvLEDsState = true;
 }
 
 void LEDController::fadeOut(byte red, byte green, byte blue)
 {
     float r, g, b;
         
-    for (int k = 255; k >= 0; k++) 
+    for (int k = 255; k >= 0; k--) 
     { 
         r = (k / 255.f) * red;
         g = (k / 255.f) * green;
@@ -124,6 +142,8 @@ void LEDController::fadeOut(byte red, byte green, byte blue)
 
         delay(1);
     }
+
+    _tvLEDsState = false;
 }
 
 void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endLED)

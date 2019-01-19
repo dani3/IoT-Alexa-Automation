@@ -30,7 +30,7 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
   if (_UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti)) 
   {
     #ifdef DEBUG
-      Serial.print("Udp multicast _server started at: ");
+      Serial.print("Udp multicast server started at: ");
       Serial.print(ipMulti);
       Serial.print(":");
       Serial.println(portMulti);
