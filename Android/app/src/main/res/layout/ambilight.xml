@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/living_room_ceiling_lamp_container"
+    android:id="@+id/living_room_ambilight_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,18 +11,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="@string/ceiling_lamp"
+        android:text="@string/ambilight"
         android:textSize="12sp"
         android:textColor="@android:color/white"
         android:fontFamily="@font/caviar_dreams"/>
 
     <ImageView
-        android:id="@+id/living_room_ceiling_lamp_image"
+        android:id="@+id/living_room_ambilight_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:padding="28dp"
         android:tint="@android:color/white"
-        android:src="@drawable/lamp"
+        android:src="@drawable/tv"
         tools:ignore="ContentDescription" />
 
 </android.support.v7.widget.LinearLayoutCompat>

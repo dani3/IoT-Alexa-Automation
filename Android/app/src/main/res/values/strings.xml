@@ -9,7 +9,7 @@
     <string name="humidity_status">Comfortable</string>
     <string name="humidity_value">18</string>
     <string name="humidity_value_pct">%</string>
-    <string name="ceiling_lamp">Ceiling lamp</string>
+    <string name="ambilight">Ambilight</string>
     <string name="foot_lamp">Foot lamp</string>
 
     <string name="currently">Currently</string>

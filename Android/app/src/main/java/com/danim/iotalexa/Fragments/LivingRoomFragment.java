@@ -45,6 +45,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
     private ImageView mFootLampImageView;
+    private ImageView mAmbilightImageView;
     private ProgressBar mTemperatureProgressBar;
 
     private View mContainer;
@@ -73,12 +74,14 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View footLampContainer = fragment.findViewById(R.id.living_room_foot_lamp_container);
+        View footLampContainer  = fragment.findViewById(R.id.living_room_foot_lamp_container);
+        View ambilightContainer = fragment.findViewById(R.id.living_room_ambilight_container);
 
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
         mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
+        mAmbilightImageView       = fragment.findViewById(R.id.living_room_ambilight_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
         mContainer                = fragment.findViewById(R.id.living_room_container);
         mLoadingView              = fragment.findViewById(R.id.living_room_loading);
@@ -93,7 +96,16 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
             @Override
             public void onClick(View v)
             {
-                _toggleLamp(mFootLampImageView);
+                _toggleLamp(mFootLampImageView, Constants.NODEV1_IP);
+            }
+        });
+
+        ambilightContainer.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                _toggleLamp(mAmbilightImageView, Constants.NODEV2_IP);
             }
         });
 
@@ -155,11 +167,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     }
 
     /**
-     * Function to control the foot lamp.
+     * Function to toggle a device on or off.
      */
-    private void _toggleLamp(final ImageView lamp)
+    private void _toggleLamp(final ImageView device, final String deviceIp)
     {
-        String url = Constants.NODEV1_IP + Constants.TOGGLE_LIGHT;
+        String url = deviceIp + Constants.TOGGLE_LIGHT;
 
         Log.d(Constants.TAG, "Connecting to: " + url);
 
@@ -173,7 +185,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
                 YoYo.with(Techniques.Tada)
                     .duration(750)
-                    .playOn(lamp);
+                    .playOn(device);
             }
         }
         , new Response.ErrorListener()
@@ -188,11 +200,11 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
                 YoYo.with(Techniques.Shake)
                     .duration(375)
-                    .playOn(lamp);
+                    .playOn(device);
             }
         });
 
-        mFootLampImageView.startAnimation(mPulseAnimation);
+        device.startAnimation(mPulseAnimation);
 
         VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
