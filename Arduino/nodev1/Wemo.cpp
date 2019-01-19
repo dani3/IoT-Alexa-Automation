@@ -1,25 +1,22 @@
-#include "Switch.h"
+#include "Wemo.h"
 #include "CallbackFunction.h"
 #include "Utils.h"
 #include "string"
 #include "Defines.h"
         
-Switch::Switch()
+Wemo::Wemo()
 {
   #ifdef DEBUG
     Serial.println("default constructor called");
   #endif
 }
 
-Switch::Switch(
+Wemo::Wemo(
     String alexaInvokeName
   , unsigned int port
-  , LightSensor * lightSensor
   , CallbackFunction onCallback
   , CallbackFunction offCallback)
 {
-  _lightStatus = false;
-
   uint32_t chipId = ESP.getChipId();
   char uuid[64];
 
@@ -35,14 +32,13 @@ Switch::Switch(
   _localPort = port;
   _onCallback = onCallback;
   _offCallback = offCallback;
-  _lightSensor = lightSensor;
-    
-  _startWebServer();
 }
  
-Switch::~Switch() {}
+Wemo::~Wemo() {}
 
-void Switch::serverLoop()
+void Wemo::_startWebServer() {}
+
+void Wemo::serverLoop()
 {
   if (_server != NULL) 
   {
@@ -51,127 +47,7 @@ void Switch::serverLoop()
   }
 }
 
-void Switch::_startWebServer()
-{
-  _server = new ESP8266WebServer(_localPort);
-
-  _server->on("/", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleRoot();
-  }); 
-
-  _server->on("/setup.xml", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleSetupXml();
-  });
-
-  _server->on("/upnp/control/basicevent1", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleUpnpControl();
-  });
-
-  _server->on("/eventservice.xml", [&]() 
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleEventservice();
-  });
-
-  _server->on("/toggleLight", [&]()
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    if (_lightSensor->isLightOn())
-    {
-      _offCallback();
-    }
-    else
-    {
-      _onCallback();      
-    }
-
-    _server->send(200, "text/plain", "Done");
-  });
-
-  _server->on("/getLight", [&]()
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleGetLight();
-  });
-
-  _server->on("/setLightThreshold", [&]()
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleSetThreshold();    
-  });
-
-  _server->on("/getThreshold", [&]()
-  {
-    Utils::quickLEDFlashing(ONCE);
-
-    _handleGetThreshold();    
-  });
-
-  _server->begin();
-
-  #ifdef DEBUG
-    Serial.print("WebServer started on port: ");
-    Serial.println(_localPort);
-  #endif
-}
-
-void Switch::_handleGetLight()
-{
-#ifdef DEBUG
-  Serial.println("Got Request to get the light ...\n");
-#endif
-
-  short light = _lightSensor->getLight();
-
-  String lightStr = String("Light value: " + String(light));
-
-  _server->send(200, "text/plain", lightStr);
-}
-
-void Switch::_handleGetThreshold()
-{
-#ifdef DEBUG
-  Serial.println("Got Request to get the light threshold ...\n");
-#endif
-
-  short light = _lightSensor->getThreshold();
-
-  String lightStr = String("Threshold value: " + String(light));
-
-  _server->send(200, "text/plain", lightStr);
-}
- 
-void Switch::_handleSetThreshold()
-{
-#ifdef DEBUG
-  Serial.print("Got Request to set the light threshold to : ");
-  Serial.println(_server->arg("Threshold"));
-  Serial.println("");
-#endif
-
-  if (_server->arg("Threshold") != "")
-  {
-    short value = strtoul(_server->arg("Threshold").c_str(), NULL, 10);
-    _lightSensor->setThreshold(value);
-  }
-
-  _server->send(200, "text/plain", "Done");
-}
-
-void Switch::_handleEventservice()
+void Wemo::_handleEventservice()
 {
   #ifdef DEBUG
     Serial.println("Responding to eventservice.xml ...\n");
@@ -221,7 +97,7 @@ void Switch::_handleEventservice()
     _server->send(200, "text/plain", eventserviceXML.c_str());
 }
  
-void Switch::_handleUpnpControl()
+void Wemo::_handleUpnpControl()
 {
   #ifdef DEBUG
     Serial.println("Responding to /upnp/control/basicevent1 ...");      
@@ -236,9 +112,9 @@ void Switch::_handleUpnpControl()
         Serial.println(" - Got Turn on request");
       #endif
 
-      _lightStatus = _onCallback();
+      _deviceStatus = _onCallback();
 
-      sendRelayState();
+      _sendDeviceState();
     }
 
     if (request.indexOf("<BinaryState>0</BinaryState>") >= 0) 
@@ -247,9 +123,9 @@ void Switch::_handleUpnpControl()
         Serial.println(" - Got Turn off request");
       #endif
 
-      _lightStatus = _offCallback();
+      _deviceStatus = _offCallback();
       
-      sendRelayState();
+      _sendDeviceState();
     }
   }
 
@@ -259,18 +135,18 @@ void Switch::_handleUpnpControl()
       Serial.println(" - Got relay state request");
     #endif
 
-    sendRelayState();
+    _sendDeviceState();
   }
   
   _server->send(200, "text/plain", "");
 }
 
-void Switch::_handleRoot()
+void Wemo::_handleRoot()
 {
   _server->send(200, "text/plain", "You should tell Alexa to discover devices");
 }
 
-void Switch::_handleSetupXml()
+void Wemo::_handleSetupXml()
 {
   #ifdef DEBUG
     Serial.println("Responding to setup.xml ...\n");
@@ -314,19 +190,19 @@ void Switch::_handleSetupXml()
     #endif
 }
 
-String Switch::getAlexaInvokeName() 
+String Wemo::getAlexaInvokeName() 
 {
   return _deviceName;
 }
 
-void Switch::sendRelayState() 
+void Wemo::_sendDeviceState() 
 {
   String body = 
     "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>\r\n"
     "<u:GetBinaryStateResponse xmlns:u=\"urn:Belkin:service:basicevent:1\">\r\n"
     "<BinaryState>";
       
-  body += (_lightStatus ? "1" : "0");
+  body += (_deviceStatus ? "1" : "0");
   
   body += 
     "</BinaryState>\r\n"
@@ -341,7 +217,7 @@ void Switch::sendRelayState()
   #endif
 }
 
-void Switch::respondToSearch(IPAddress& senderIP, unsigned int senderPort) 
+void Wemo::respondToSearch(IPAddress& senderIP, unsigned int senderPort) 
 {
   #ifdef DEBUG
     Serial.print(" - Sending response to ");

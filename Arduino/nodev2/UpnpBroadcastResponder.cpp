@@ -1,19 +1,19 @@
 #include <functional>
 
 #include "UpnpBroadcastResponder.h"
-#include "Switch.h"
+#include "Wemo.h"
 #include "Utils.h"
 #include "Defines.h"
 
-#define MAX_SWITCHES 14
+#define MAX_WEMOS 14
 
 // Multicast declarations
 IPAddress ipMulti(239, 255, 255, 250);
 const unsigned int portMulti = 1900;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
-Switch switches[MAX_SWITCHES] = {};
-int numOfSwitches = 0;
+Wemo wemos[MAX_WEMOS] = {};
+int numOfWemos = 0;
  
 UpnpBroadcastResponder::UpnpBroadcastResponder() {} 
 
@@ -30,7 +30,7 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
   if (_UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti)) 
   {
     #ifdef DEBUG
-      Serial.print("Udp multicast _server started at: ");
+      Serial.print("Udp multicast server started at: ");
       Serial.print(ipMulti);
       Serial.print(":");
       Serial.println(portMulti);
@@ -48,16 +48,16 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
   return state;
 }
 
-void UpnpBroadcastResponder::addDevice(Switch& device) 
+void UpnpBroadcastResponder::addDevice(Wemo& device) 
 {
   #ifdef DEBUG
-    Serial.print("Adding switch: ");
+    Serial.print("Adding wemo: ");
     Serial.print(device.getAlexaInvokeName());
     Serial.print("  Index: ");
-    Serial.println(numOfSwitches);
+    Serial.println(numOfWemos);
   #endif
   
-  switches[numOfSwitches++] = device;
+  wemos[numOfWemos++] = device;
 }
 
 void UpnpBroadcastResponder::serverLoop()
@@ -87,9 +87,9 @@ void UpnpBroadcastResponder::serverLoop()
         Serial.println("Got _UDP Belkin Request ...");
       #endif
     
-      for (int n = 0; n < numOfSwitches; n++) 
+      for (int n = 0; n < numOfWemos; n++) 
       {
-        Switch &sw = switches[n];
+        Wemo &sw = wemos[n];
 
         if (&sw != NULL) 
         {

@@ -5,7 +5,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUDP.h>
 
-#include "Switch.h"
+#include "Wemo.h"
 
 class UpnpBroadcastResponder 
 {
@@ -18,7 +18,7 @@ class UpnpBroadcastResponder
 
         bool beginUdpMulticast();
         void serverLoop();
-        void addDevice(Switch& device);
+        void addDevice(Wemo& device);
 };
  
 #endif
