@@ -12,13 +12,26 @@ The idea is to have an ESP8266 controlling each individual device that will rece
 * `nodev1`:
     * Controller: `ESP8266-12E`
     * IP: 192.168.1.4
-    * Alexa invoke name: `Living room light`
     * Components:
+        * ESP8266-12E
         * Relay module
         * Photoresistor
         * Logic level shifter
         * 3-way switch
         * 220V/5V Power supply
+
+    * Wemos attached:
+        * Foot lamp
+            * Alexa invoke name: `Living room light`
+            * Port: `80`
+            * Endpoints:
+                * `/setup.xml`
+                * `/upnp/control/basicevent1`
+                * `/eventservice.xml`
+                * `/toggleLight`
+                * `/getLight`
+                * `/setLightThreshold?Threshold=XXX`
+                * `/getThreshold`
 
 * `nodev2`:
     * Controller: `ESP8266-12E`
