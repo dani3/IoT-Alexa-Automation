@@ -24,7 +24,7 @@
 #define THRICE    3
 
 // GPIO Pins
-#define TV_LED_STRIP_PIN    2
+#define TV_LED_STRIP_PIN    D2
 
 // Number of LEDs
 #define TV_LED_STRIP_NUM_LEDS   232
