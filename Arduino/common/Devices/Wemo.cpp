@@ -132,7 +132,7 @@ void Wemo::_handleUpnpControl()
   if (request.indexOf("GetBinaryState") >= 0) 
   {
     #ifdef DEBUG
-      Serial.println(" - Got relay state request");
+      Serial.println(" - Got device state request");
     #endif
 
     _sendDeviceState();
@@ -188,6 +188,11 @@ void Wemo::_handleSetupXml()
       Serial.print(" - Sending: ");
       Serial.println(setupXML);
     #endif
+}
+
+bool Wemo::isDeviceOn()
+{
+  return _deviceStatus;
 }
 
 String Wemo::getAlexaInvokeName() 

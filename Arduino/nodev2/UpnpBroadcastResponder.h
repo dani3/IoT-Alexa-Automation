@@ -1,3 +1,11 @@
+/** @file UpnpBroadcastResponder.h
+ *  @brief Class that takes care of the multicasting to be able to 
+ *         set up every device with Alexa.
+ *
+ *  @author Daniel Mancebo
+ *  @bug No known bugs.
+ */
+
 #ifndef UPNPBROADCASTRESPONDER_H
 #define UPNPBROADCASTRESPONDER_H
  

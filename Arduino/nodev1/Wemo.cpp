@@ -132,7 +132,7 @@ void Wemo::_handleUpnpControl()
   if (request.indexOf("GetBinaryState") >= 0) 
   {
     #ifdef DEBUG
-      Serial.println(" - Got relay state request");
+      Serial.println(" - Got device state request");
     #endif
 
     _sendDeviceState();

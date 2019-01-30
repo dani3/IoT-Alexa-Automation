@@ -1,21 +1,13 @@
 #include "LEDController.h"
-#include "CallbackFunction.h"
-#include "Utils.h"
-#include "string"
 #include "Defines.h"
 
-LEDController::LEDController() : Wemo() {}
+LEDController::LEDController() {}
 
 LEDController::LEDController(
-    String alexaInvokeName
-  , unsigned int port
-  , CallbackFunction onCallback
-  , CallbackFunction offCallback
-  , int pin
+    int pin
   , int numLeds
   , int indexController
   , int brightness)
-  : Wemo(alexaInvokeName, port, onCallback, offCallback)
 {
     _leds = new CRGB[numLeds];
 
@@ -23,70 +15,10 @@ LEDController::LEDController(
     _brightness = brightness;
     _numLeds    = numLeds;
 
-    _tvLEDsState = false;
-
-    FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
-
-    _startWebServer();
+    if (pin == TV_LED_STRIP_PIN) FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
 }
         
 LEDController::~LEDController() {}
-
-void LEDController::_startWebServer()
-{
-    _server = new ESP8266WebServer(_localPort);
-
-    _server->on("/", [&]() 
-    {
-        Utils::quickLEDFlashing(ONCE);
-
-        _handleRoot();
-    }); 
-
-    _server->on("/setup.xml", [&]() 
-    {
-        Utils::quickLEDFlashing(ONCE);
-
-        _handleSetupXml();
-    });
-
-    _server->on("/upnp/control/basicevent1", [&]() 
-    {
-        Utils::quickLEDFlashing(ONCE);
-
-        _handleUpnpControl();
-    });
-
-    _server->on("/eventservice.xml", [&]() 
-    {
-        Utils::quickLEDFlashing(ONCE);
-
-        _handleEventservice();
-    });
-
-    _server->on("/toggleLight", [&]()
-    {
-        Utils::quickLEDFlashing(ONCE);
-
-        if (_tvLEDsState)
-        {
-            _offCallback();
-        }
-        else
-        {
-            _onCallback();      
-        }
-
-        _server->send(200, "text/plain", "Done");
-    });
-
-    _server->begin();
-
-    #ifdef DEBUG
-        Serial.print("WebServer started on port: ");
-        Serial.println(_localPort);
-    #endif
-}
 
 void LEDController::_showStrip()
 {
@@ -124,8 +56,6 @@ void LEDController::fadeIn(byte red, byte green, byte blue)
 
         delay(1);
     }
-
-    _tvLEDsState = true;
 }
 
 void LEDController::fadeOut(byte red, byte green, byte blue)
@@ -142,8 +72,6 @@ void LEDController::fadeOut(byte red, byte green, byte blue)
 
         delay(1);
     }
-
-    _tvLEDsState = false;
 }
 
 void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endLED)
@@ -223,9 +151,4 @@ void LEDController::wrap(byte red, byte green, byte blue, int startLED, int endL
     } 
 
     _setPixel(endLED, redL, greenL, blueL);
-}
-
-bool LEDController::isLightOn()
-{
-    return _tvLEDsState;
 }

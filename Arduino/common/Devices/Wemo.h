@@ -1,3 +1,12 @@
+/** @file Wemo.h
+ *  @brief Parent class for every device connected to the NodeMCU.
+ *         It implements the common comunication needed for Alexa, delegating
+ *         to the base classes the implementation of the web server. 
+ *
+ *  @author Daniel Mancebo
+ *  @bug No known bugs.
+ */
+
 #ifndef WEMO_H
 #define WEMO_H
  
@@ -41,6 +50,8 @@ class Wemo
         
         void serverLoop();
         void respondToSearch(IPAddress& senderIP, unsigned int senderPort);
+
+        bool isDeviceOn();
           
         virtual void _startWebServer();
 };

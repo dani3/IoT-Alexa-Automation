@@ -1,8 +1,16 @@
+/** @file nodev2.ino
+ *  @brief Main sketch for the ESP8266-12E on the Living room
+ * in charge of controlling the LEDs strips.
+ *
+ *  @author Daniel Mancebo
+ *  @bug No known bugs.
+ */
+
 #include <Arduino.h>
 
 #include "Utils.h"
 #include "UpnpBroadcastResponder.h"
-#include "LEDController.h"
+#include "AmbientLightController.h"
 #include "Defines.h"
 
 // Prototypes
@@ -16,7 +24,7 @@ boolean _wifiConnected;
 boolean _controllersInitialized;
 
 // LEDs controllers attached to this node
-LEDController * _tvLedController = NULL;
+AmbientLightController * _tvLedController = NULL;
 
 UpnpBroadcastResponder _upnpBroadcastResponder;
 
@@ -31,7 +39,7 @@ bool turnOnTVAmbientLight()
   #endif 
 
   // Check if the light is already on.
-  if (_tvLedController->isLightOn())
+  if (_tvLedController->isDeviceOn())
   {
     #ifdef DEBUG
       Serial.println("Ambient light is already ON ...");
@@ -40,7 +48,7 @@ bool turnOnTVAmbientLight()
   else
   {
     // Turn on the LEDs
-    _tvLedController->fadeIn(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+    _tvLedController->turnOnOff(true);
   }  
 
   return true;
@@ -56,7 +64,7 @@ bool turnOffTVAmbientLight()
     Serial.println("Request to turn OFF the TV ambient light ...");
   #endif 
 
-  if (!_tvLedController->isLightOn())
+  if (!_tvLedController->isDeviceOn())
   {
     #ifdef DEBUG
       Serial.println("Light is already OFF ...");
@@ -65,7 +73,7 @@ bool turnOffTVAmbientLight()
   else
   {
     // Turn off the LEDs
-    _tvLedController->fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+    _tvLedController->turnOnOff(false);
   }  
 
   return false;
@@ -140,6 +148,9 @@ void setup()
   
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(TV_LED_STRIP_PIN, OUTPUT);
+
+  digitalWrite(TV_LED_STRIP_PIN, LOW);
 
   // Initialise WiFi connection
   _wifiConnected = _connectToWiFi();
@@ -150,15 +161,12 @@ void setup()
 
     // Define your switches here.
     // Format: Alexa invocation name, local port no, on callback, off callback
-    _tvLedController = new LEDController(
+    _tvLedController = new AmbientLightController(
         AMBILIGHT_NODE_NAME
       , AMBILIGHT_PORT
       , turnOnTVAmbientLight
       , turnOffTVAmbientLight
-      , TV_LED_STRIP_PIN
-      , TV_LED_STRIP_NUM_LEDS
-      , TV_LED_STRIP_INDEX
-      , TV_LED_STRIP_BRIGHTNESS);
+      , TV_LED_STRIP_PIN);
 
     _upnpBroadcastResponder.addDevice(*_tvLedController);
 
@@ -194,15 +202,12 @@ void loop()
       {
         // Define your switches here.
         // Format: Alexa invocation name, local port no, on callback, off callback
-        _tvLedController = new LEDController(
+        _tvLedController = new AmbientLightController(
             AMBILIGHT_NODE_NAME
           , AMBILIGHT_PORT
           , turnOnTVAmbientLight
           , turnOffTVAmbientLight
-          , TV_LED_STRIP_PIN
-          , TV_LED_STRIP_NUM_LEDS
-          , TV_LED_STRIP_INDEX
-          , TV_LED_STRIP_BRIGHTNESS);
+          , TV_LED_STRIP_PIN);
 
         _upnpBroadcastResponder.addDevice(*_tvLedController);
 
