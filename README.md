@@ -35,13 +35,23 @@ The idea is to have an ESP8266 controlling each individual device that will rece
 
 * `nodev2`:
     * Controller: `ESP8266-12E`
-    * IP: TBD
-    * Alexa invoke name: `Ambient lights`
-    * Componentes:
+    * IP: 192.168.1.5
+    * Components:
+        * ESP8266-12E
         * 4M + 3M Led strips
         * 10A - 5V Power supply
         * 5A - 5V Power supply
-        * Logic level shifter
+        * Arduino Mega
+
+    * Wemos attached:
+        * TV LEDs controller
+            * Alexa invoke name: `Ambilight`
+            * Port: 80
+            * Endpoints:
+                * `/setup.xml`
+                * `/upnp/control/basicevent1`
+                * `/eventservice.xml`
+                * `/toggleLight`
 
 ## Alexa Integration
 
