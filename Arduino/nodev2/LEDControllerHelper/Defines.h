@@ -24,7 +24,7 @@
 #define TV_LED_STRIP_NUM_LEDS       232
 
 // LED strips brightness
-#define TV_LED_STRIP_BRIGHTNESS     150
+#define TV_LED_STRIP_BRIGHTNESS     85
 
 // Animation values
 #define WRAP_START_LED              194
