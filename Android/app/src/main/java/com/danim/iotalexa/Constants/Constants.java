@@ -17,7 +17,7 @@ public class Constants
     public static final String[] PERMISSIONS = { Manifest.permission.INTERNET };
 
     public static final String NODEV1_IP = "http://192.168.1.4";
-    public static final String NODEV2_IP = "http://192.168.1.9";
+    public static final String NODEV2_IP = "http://192.168.1.5";
 
     public static final String TOGGLE_LIGHT  = "/toggleLight";
 
