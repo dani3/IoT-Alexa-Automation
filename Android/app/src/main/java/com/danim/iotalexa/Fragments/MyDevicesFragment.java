@@ -29,9 +29,6 @@ public class MyDevicesFragment extends android.support.v4.app.Fragment
     private ImageView mNodev1Status;
     private ImageView mNodev2Status;
 
-    private TextView mNodev1TextView;
-    private TextView mNodev2TextView;
-
     public MyDevicesFragment() {}
 
     /**
@@ -54,14 +51,8 @@ public class MyDevicesFragment extends android.support.v4.app.Fragment
         mFootLampImageView  = fragment.findViewById(R.id.living_room_foot_lamp_image);
         mAmbilightImageView = fragment.findViewById(R.id.living_room_ambilight_image);
 
-        View nodev1Container = fragment.findViewById(R.id.nodev1);
-        View nodev2Container = fragment.findViewById(R.id.nodev2);
-
-        mNodev1TextView = nodev1Container.findViewById(R.id.device_name);
-        mNodev2TextView = nodev2Container.findViewById(R.id.device_name);
-
-        mNodev1Status = nodev1Container.findViewById(R.id.device_status);
-        mNodev2Status = nodev2Container.findViewById(R.id.device_status);
+        mNodev1Status = fragment.findViewById(R.id.nodev1_status);
+        mNodev2Status = fragment.findViewById(R.id.nodev2_status);
 
         footLampContainer.setOnClickListener(new View.OnClickListener()
         {
@@ -104,8 +95,7 @@ public class MyDevicesFragment extends android.support.v4.app.Fragment
      */
     private void _initializeViews()
     {
-        mNodev1TextView.setText(getResources().getString(R.string.ambilight));
-        mNodev2TextView.setText(getResources().getString(R.string.foot_lamp));
+
     }
 
     /**
