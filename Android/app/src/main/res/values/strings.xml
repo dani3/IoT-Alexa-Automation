@@ -2,6 +2,9 @@
     <string name="app_name">IoT Alexa</string>
 
     <string name="living_room">Living Room</string>
+    <string name="devices">My Devices</string>
+    <string name="device_1">Device #1</string>
+    <string name="device_2">Device #2</string>
 
     <string name="temperature">Temperature</string>
     <string name="temperature_status">Cool</string>

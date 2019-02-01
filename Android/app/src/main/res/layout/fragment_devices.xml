@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/caviar_dreams"
+        android:textSize="24sp"
+        android:textColor="@android:color/white"
+        android:text="@string/devices"
+        android:layout_marginLeft="38dp"
+        android:layout_marginRight="38dp"
+        android:layout_marginTop="38dp"/>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginStart="34dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/darker_gray"/>
+
+    <!-- First device -->
+    <include layout="@layout/device_status"
+        android:id="@+id/nodev1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="38dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Second device -->
+    <include layout="@layout/device_status"
+        android:id="@+id/nodev2"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="38dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginBottom="12dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="38dp"
+        android:background="@null">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:background="@null"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_tbd1_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/device_height"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
+
+                    <include layout="@layout/ambilight"/>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:background="@null"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp"
+                android:weightSum="1">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/living_room_tbd2_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/device_height"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="8dp">
+
+                    <include layout="@layout/foot_lamp"/>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
