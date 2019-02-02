@@ -4,24 +4,15 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.danim.iotalexa.Beans.LivingRoomStatus;
-import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.Utils;
 import com.danim.iotalexa.R;
-import com.danim.iotalexa.Singletons.VolleySingleton;
 
 import java.util.Locale;
 

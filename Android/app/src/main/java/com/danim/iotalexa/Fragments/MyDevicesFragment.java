@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -95,7 +95,48 @@ public class MyDevicesFragment extends android.support.v4.app.Fragment
      */
     private void _initializeViews()
     {
+        StringRequest nodev1Request = new StringRequest(
+              Request.Method.GET
+            , Constants.NODEV1_IP + Constants.ROOT
+            , new Response.Listener<String>()
+            {
+                @Override
+                public void onResponse(String response)
+                {
+                    mNodev1Status.setImageDrawable(getResources().getDrawable(R.drawable.status_dot_green, getResources().newTheme()));
+                }
+            }
+            , new Response.ErrorListener()
+            {
+                @Override
+                public void onErrorResponse(VolleyError error)
+                {
+                    mNodev1Status.setImageDrawable(getResources().getDrawable(R.drawable.status_dot_red, getResources().newTheme()));
+                }
+            });
 
+        StringRequest nodev2Request = new StringRequest(
+                Request.Method.GET
+                , Constants.NODEV2_IP + Constants.ROOT
+                , new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                mNodev2Status.setImageDrawable(getResources().getDrawable(R.drawable.status_dot_green, getResources().newTheme()));
+            }
+        }
+                , new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                mNodev2Status.setImageDrawable(getResources().getDrawable(R.drawable.status_dot_red, getResources().newTheme()));
+            }
+        });
+
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(nodev1Request);
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(nodev2Request);
     }
 
     /**
