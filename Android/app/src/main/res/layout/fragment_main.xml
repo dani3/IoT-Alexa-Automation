@@ -52,7 +52,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="48dp"
+            android:paddingBottom="16dp"
             android:paddingTop="38dp">
 
             <LinearLayout
@@ -107,8 +107,45 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:text="@string/temperature_history"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginRight="38dp"
+                    android:layout_marginBottom="16dp"/>
+
                 <com.db.chart.view.LineChartView
                     android:id="@+id/temperature_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    app:chart_fontSize="10sp"
+                    app:chart_axis="false"
+                    app:chart_axisBorderSpacing="0dp"
+                    app:chart_labelColor="@android:color/white"
+                    app:chart_typeface="@font/caviar_dreams"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:text="@string/humidity_history"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginRight="38dp"
+                    android:layout_marginTop="38dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.db.chart.view.LineChartView
+                    android:id="@+id/humidity_chart"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
                     android:layout_marginLeft="30dp"
