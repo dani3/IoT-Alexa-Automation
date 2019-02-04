@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -72,6 +73,8 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
     private LineChartView mTemperatureChart;
     private LineChartView mHumidityChart;
+    private Animation mTemperatureChartAnimation;
+    private Animation mHumidityChartAnimation;
 
     private TextView mTemperatureTextView;
     private TextView mTemperatureStateTextView;
@@ -115,6 +118,14 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         mErrorTextView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
 
+        mTemperatureChartAnimation = new Animation();
+        mTemperatureChartAnimation.setDuration(375);
+        mTemperatureChartAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        mHumidityChartAnimation = new Animation();
+        mHumidityChartAnimation.setDuration(375);
+        mHumidityChartAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+
         return fragment;
     }
 
@@ -156,6 +167,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
     private void _initializeTemperatureChart()
     {
+        // Display the hours on the x-axis
         Calendar calendar = Calendar.getInstance();
         int currentHour   = calendar.get(Calendar.HOUR_OF_DAY);
         int currentMinute = calendar.get(Calendar.MINUTE);
@@ -163,15 +175,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         currentHour = (currentMinute < 30) ? currentHour - 1 : currentHour;
 
         mTemperatureLabels[LAST - 6]      = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
-        mTemperatureLabels[LAST - 6 - 9]  = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
         mTemperatureLabels[LAST - 6 - 18] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
-        mTemperatureLabels[LAST - 6 - 27] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
         mTemperatureLabels[LAST - 6 - 37] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
 
+        // Set the data
         LineSet dataset = new LineSet(mTemperatureLabels, mTemperatureValues[0]);
         dataset.setColor(getResources().getColor(R.color.colorAccentDarkPurple, getResources().newTheme()))
                .setThickness(Tools.fromDpToPx(3))
@@ -181,6 +190,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
 
         mTemperatureChart.addData(dataset);
 
+        // Threshold line
         Paint thresPaint = new Paint();
         thresPaint.setColor(Color.parseColor("#0079ae"));
         thresPaint.setStyle(Paint.Style.STROKE);
@@ -188,23 +198,25 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         thresPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
         thresPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
 
+        // Grid lines
         Paint gridPaint = new Paint();
-        gridPaint.setColor(Color.parseColor("#ffffff"));
+        gridPaint.setColor(Color.parseColor("#cccccc"));
         gridPaint.setStyle(Paint.Style.STROKE);
         gridPaint.setAntiAlias(true);
         gridPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
 
+        // No decimals
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(0);
 
         mTemperatureChart.setXLabels(AxisRenderer.LabelPosition.OUTSIDE)
-              .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
-              .setAxisLabelsSpacing(20)
-              .setLabelsFormat(decimalFormat)
-              .setGrid(0, 6, gridPaint)
-              .setValueThreshold(21f, 21f, thresPaint)
-              .setAxisBorderValues(15, 30)
-              .show(new Animation().fromXY(0, .5f));
+                         .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                         .setAxisLabelsSpacing(20)
+                         .setLabelsFormat(decimalFormat)
+                         .setGrid(0, 3, gridPaint)
+                         .setValueThreshold(21f, 21f, thresPaint)
+                         .setAxisBorderValues(15, 30)
+                         .show(mTemperatureChartAnimation);
     }
 
     private void _initializeHumidityChart()
@@ -216,13 +228,9 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         currentHour = (currentMinute < 30) ? currentHour - 1 : currentHour;
 
         mHumidityLabels[LAST - 6]      = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
-        mHumidityLabels[LAST - 6 - 9]  = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
         mHumidityLabels[LAST - 6 - 18] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
-        mHumidityLabels[LAST - 6 - 27] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
-        currentHour = (currentHour - 5 < 0) ? 24 - 5 + currentHour : currentHour - 5;
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
         mHumidityLabels[LAST - 6 - 37] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
 
         LineSet dataset = new LineSet(mHumidityLabels, mHumidityValues[0]);
@@ -242,7 +250,7 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         thresPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
 
         Paint gridPaint = new Paint();
-        gridPaint.setColor(Color.parseColor("#ffffff"));
+        gridPaint.setColor(Color.parseColor("#cccccc"));
         gridPaint.setStyle(Paint.Style.STROKE);
         gridPaint.setAntiAlias(true);
         gridPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
@@ -251,12 +259,12 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
         decimalFormat.setMaximumFractionDigits(0);
 
         mHumidityChart.setXLabels(AxisRenderer.LabelPosition.OUTSIDE)
-                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
-                .setAxisLabelsSpacing(20)
-                .setLabelsFormat(decimalFormat)
-                .setGrid(0, 6, gridPaint)
-                .setValueThreshold(35, 35, thresPaint)
-                .setAxisBorderValues(0, 100)
-                .show(new Animation().fromXY(0, .5f));
+                      .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                      .setAxisLabelsSpacing(20)
+                      .setLabelsFormat(decimalFormat)
+                      .setGrid(0, 3, gridPaint)
+                      .setValueThreshold(35, 35, thresPaint)
+                      .setAxisBorderValues(0, 100)
+                      .show(mHumidityChartAnimation);
     }
 }
