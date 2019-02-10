@@ -9,10 +9,13 @@
 #include <Arduino.h>
 
 #include "Defines.h"
+#include "DHTSensor.h"
 
 // Change this before you flash
 const char* SSID = "DMA";
 const char* PWD = "1123581321";
+
+DHTSensor * dhtSensor = new DHTSensor(DHT_PIN, DHT_TYPE);
 
 /** @brief General setup of the node.
  * 
@@ -32,5 +35,5 @@ void setup()
  */
 void loop() 
 {
-  
+  dhtSensor->readValues();
 }
