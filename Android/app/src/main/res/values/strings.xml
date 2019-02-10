@@ -4,6 +4,9 @@
     <string name="home">Home</string>
     <string name="devices">My Devices</string>
 
+    <string name="temperature_history">Temperature history (ºC)</string>
+    <string name="humidity_history">Humidity history (%)</string>
+
     <string name="temperature">Temperature</string>
     <string name="temperature_status">Cool</string>
     <string name="humidity">Humidity</string>

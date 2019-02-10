@@ -49,49 +49,118 @@
             android:layout_marginRight="38dp"
             android:layout_marginTop="38dp"/>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="38dp"
-            android:background="@null"
-            android:weightSum="1"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
+            android:paddingBottom="16dp"
+            android:paddingTop="38dp">
 
-            <!-- Temperature -->
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_temperature_container"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/device_height"
-                android:layout_weight=".5"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp"
-                tools:ignore="NestedWeights">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <include layout="@layout/temperature"/>
+                <!-- CardViews -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="38dp"
+                    android:layout_marginStart="38dp"
+                    android:layout_marginEnd="38dp"
+                    android:background="@null"
+                    android:weightSum="1"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
 
-            </android.support.v7.widget.CardView>
+                    <!-- Temperature -->
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/living_room_temperature_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/device_height"
+                        android:layout_weight=".5"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/colorPrimary"
+                        app:cardCornerRadius="8dp"
+                        tools:ignore="NestedWeights">
 
-            <!-- Humidity -->
-            <android.support.v7.widget.CardView
-                android:id="@+id/living_room_humidity_container"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/device_height"
-                android:layout_weight=".5"
-                android:layout_marginBottom="8dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="8dp"
-                tools:ignore="NestedWeights">
+                        <include layout="@layout/temperature"/>
 
-                <include layout="@layout/humidity"/>
+                    </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
+                    <!-- Humidity -->
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/living_room_humidity_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/device_height"
+                        android:layout_weight=".5"
+                        android:layout_marginBottom="8dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/colorPrimary"
+                        app:cardCornerRadius="8dp"
+                        tools:ignore="NestedWeights">
 
-        </LinearLayout>
+                        <include layout="@layout/humidity"/>
+
+                    </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:text="@string/temperature_history"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginRight="38dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.db.chart.view.LineChartView
+                    android:id="@+id/temperature_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    app:chart_fontSize="10sp"
+                    app:chart_axis="false"
+                    app:chart_axisBorderSpacing="0dp"
+                    app:chart_labelColor="@android:color/white"
+                    app:chart_typeface="@font/caviar_dreams"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/caviar_dreams"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:text="@string/humidity_history"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginRight="38dp"
+                    android:layout_marginTop="38dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.db.chart.view.LineChartView
+                    android:id="@+id/humidity_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    app:chart_fontSize="10sp"
+                    app:chart_axis="false"
+                    app:chart_axisBorderSpacing="0dp"
+                    app:chart_labelColor="@android:color/white"
+                    app:chart_typeface="@font/caviar_dreams"/>
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
 
