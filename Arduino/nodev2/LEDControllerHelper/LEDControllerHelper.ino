@@ -11,9 +11,12 @@
 #include "Defines.h"
 
 LEDController _tvLedController;
+LEDController _tvDrawerLedController;
 
-bool _state = LOW;
-bool _previousState = LOW;
+bool _tvState               = LOW;
+bool _tvPreviousState       = LOW;
+bool _tvDrawerState         = LOW;
+bool _tvDrawerPreviousState = LOW;
 
 /** @brief General setup of the node.
  * 
@@ -23,13 +26,20 @@ void setup()
 {
   Serial.begin(9600);
 
-  pinMode(ESP_PIN_INPUT, INPUT);
+  pinMode(TV_LED_STRIP_INPUT, INPUT);
+  pinMode(TV_DRAWER_LED_STRIP_INPUT, INPUT);
 
   _tvLedController = LEDController(
       TV_LED_STRIP_PIN
     , TV_LED_STRIP_NUM_LEDS
     , TV_LED_STRIP_INDEX
     , TV_LED_STRIP_BRIGHTNESS);
+
+  _tvDrawerLedController = LEDController(
+      TV_DRAWER_LED_STRIP_PIN
+    , TV_DRAWER_LED_STRIP_NUM_LEDS
+    , TV_DRAWER_LED_STRIP_INDEX
+    , TV_DRAWER_LED_STRIP_BRIGHTNESS);
 
   delay(5000);
 }
@@ -40,18 +50,33 @@ void setup()
  */
 void loop() 
 {
-  _previousState = _state;
-  _state = digitalRead(ESP_PIN_INPUT);
+  _tvPreviousState       = _tvState;
+  _tvDrawerPreviousState = _tvDrawerState;
 
-  if (_state != _previousState)
+  _tvState       = digitalRead(TV_LED_STRIP_INPUT);
+  _tvDrawerState = digitalRead(TV_DRAWER_LED_STRIP_INPUT);
+
+  if (_tvState != _tvPreviousState)
   {
-    if (_state)
+    if (_tvState)
     {
       _tvLedController.fadeIn(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
     }
     else
     {
       _tvLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);      
+    }    
+  }
+
+  if (_tvDrawerState != _tvDrawerPreviousState)
+  {
+    if (_tvDrawerState)
+    {
+      _tvDrawerLedController.fadeIn(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+    }
+    else
+    {
+      _tvDrawerLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);      
     }    
   }
 

@@ -1,9 +1,10 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define ESP_PIN_INPUT               2
+#define TV_LED_STRIP_INPUT          2
 #define TV_LED_STRIP_PIN            3
-#define TV_DRAWER_LED_STRIP_PIN     4
+#define TV_DRAWER_LED_STRIP_INPUT   4
+#define TV_DRAWER_LED_STRIP_PIN     5
 
 // Colours
 #define LIGHT_YELLOW_R      0xFF

@@ -15,7 +15,7 @@ LEDController::LEDController(
     _brightness = brightness;
     _numLeds    = numLeds;
 
-    if (pin == AMBILIGHT_PIN) FastLED.addLeds<WS2812B, AMBILIGHT_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<WS2812B, pin, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
 }
         
 LEDController::~LEDController() {}

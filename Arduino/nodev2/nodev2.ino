@@ -24,7 +24,8 @@ boolean _wifiConnected;
 boolean _controllersInitialized;
 
 // LEDs controllers attached to this node
-AmbientLightController * _tvLedController = NULL;
+AmbientLightController * _tvLedController       = NULL;
+AmbientLightController * _tvDrawerLedController = NULL;
 
 UpnpBroadcastResponder _upnpBroadcastResponder;
 
@@ -74,6 +75,57 @@ bool turnOffTVAmbientLight()
   {
     // Turn off the LEDs
     _tvLedController->turnOnOff(false);
+  }  
+
+  return false;
+}
+
+/** @brief Turns on the ambient light checking if it's not already.
+ * 
+ * @return true if it's on.
+ */
+bool turnOnAmbientLight()
+{
+  #ifdef DEBUG
+    Serial.println("Request to turn ON the ambient light ...");
+  #endif 
+
+  // Check if the light is already on.
+  if (_tvDrawerLedController->isDeviceOn())
+  {
+    #ifdef DEBUG
+      Serial.println("Ambient light is already ON ...");
+    #endif 
+  }
+  else
+  {
+    // Turn on the LEDs
+    _tvDrawerLedController->turnOnOff(true);
+  }  
+
+  return true;
+}
+
+/** @brief Turns off the ambient light checking if it's not already.
+ * 
+ * @return true if it's off.
+ */
+bool turnOffAmbientLight()
+{
+  #ifdef DEBUG
+    Serial.println("Request to turn OFF the ambient light ...");
+  #endif 
+
+  if (!_tvDrawerLedController->isDeviceOn())
+  {
+    #ifdef DEBUG
+      Serial.println("Light is already OFF ...");
+    #endif 
+  }
+  else
+  {
+    // Turn off the LEDs
+    _tvDrawerLedController->turnOnOff(false);
   }  
 
   return false;
@@ -148,9 +200,11 @@ void setup()
   
   // Initialize the LED_BUILTIN pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(TV_LED_STRIP_PIN, OUTPUT);
+  pinMode(AMBILIGHT_PIN, OUTPUT);
+  pinMode(AMBIENT_LIGHTS_PIN, OUTPUT);
 
-  digitalWrite(TV_LED_STRIP_PIN, LOW);
+  digitalWrite(AMBILIGHT_PIN, LOW);
+  digitalWrite(AMBIENT_LIGHTS_PIN, LOW);
 
   // Initialise WiFi connection
   _wifiConnected = _connectToWiFi();
@@ -166,9 +220,17 @@ void setup()
       , AMBILIGHT_PORT
       , turnOnTVAmbientLight
       , turnOffTVAmbientLight
-      , TV_LED_STRIP_PIN);
+      , AMBILIGHT_PIN);
+      
+    _tvDrawerLedController = new AmbientLightController(
+        AMBIENT_LIGHTS_NODE_NAME
+      , AMBIENT_LIGHTS_PORT
+      , turnOnAmbientLight
+      , turnOffAmbientLight
+      , AMBIENT_LIGHTS_PIN);
 
     _upnpBroadcastResponder.addDevice(*_tvLedController);
+    _upnpBroadcastResponder.addDevice(*_tvDrawerLedController);
 
     _controllersInitialized = true;
   }
@@ -207,7 +269,17 @@ void loop()
           , AMBILIGHT_PORT
           , turnOnTVAmbientLight
           , turnOffTVAmbientLight
-          , TV_LED_STRIP_PIN);
+          , AMBILIGHT_PIN);
+      
+        _tvDrawerLedController = new AmbientLightController(
+            AMBIENT_LIGHTS_NODE_NAME
+          , AMBIENT_LIGHTS_PORT
+          , turnOnAmbientLight
+          , turnOffAmbientLight
+          , AMBIENT_LIGHTS_PIN);
+
+        _upnpBroadcastResponder.addDevice(*_tvLedController);
+        _upnpBroadcastResponder.addDevice(*_tvDrawerLedController);
 
         _upnpBroadcastResponder.addDevice(*_tvLedController);
 
