@@ -1,8 +1,9 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define ESP_PIN_INPUT          2
-#define TV_LED_STRIP_PIN       3
+#define ESP_PIN_INPUT               2
+#define TV_LED_STRIP_PIN            3
+#define TV_DRAWER_LED_STRIP_PIN     4
 
 // Colours
 #define LIGHT_YELLOW_R      0xFF
@@ -18,13 +19,16 @@
 #define COLOR_ORDER         GRB
 
 // LED strip controller indexes
-#define TV_LED_STRIP_INDEX            0
+#define TV_LED_STRIP_INDEX              0
+#define TV_DRAWER_LED_STRIP_INDEX       1
 
 // Number of LEDs on each strip
-#define TV_LED_STRIP_NUM_LEDS       232
+#define TV_LED_STRIP_NUM_LEDS           232
+#define TV_DRAWER_LED_STRIP_NUM_LEDS     78
 
 // LED strips brightness
-#define TV_LED_STRIP_BRIGHTNESS     85
+#define TV_LED_STRIP_BRIGHTNESS             85
+#define TV_DRAWER_LED_STRIP_BRIGHTNESS      85
 
 // Animation values
 #define WRAP_START_LED              194
