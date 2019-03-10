@@ -93,6 +93,12 @@ void UpnpBroadcastResponder::serverLoop()
 
         if (&sw != NULL) 
         {
+          #ifdef DEBUG
+            Serial.print("Device ");
+            Serial.print(n);
+            Serial.println(" responding ...");
+          #endif
+          
           sw.respondToSearch(senderIP, senderPort);              
         }
       }

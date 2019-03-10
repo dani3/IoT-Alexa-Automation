@@ -16,6 +16,7 @@ LEDController::LEDController(
     _numLeds    = numLeds;
 
     if (pin == TV_LED_STRIP_PIN) FastLED.addLeds<WS2812B, TV_LED_STRIP_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
+    if (pin == TV_DRAWER_LED_STRIP_PIN) FastLED.addLeds<WS2812B, TV_DRAWER_LED_STRIP_PIN, COLOR_ORDER>(_leds, _numLeds).setCorrection(TypicalLEDStrip);
 }
         
 LEDController::~LEDController() {}

@@ -20,3 +20,13 @@ This node will control the ambient light in the living room.
             * `/upnp/control/basicevent1`
             * `/eventservice.xml`
             * `/toggleLight`
+
+* Wemos attached:
+    * Ambient lights controller
+        * Alexa invoke name: `Ambient lights`
+        * Port: 81
+        * Endpoints:
+            * `/setup.xml`
+            * `/upnp/control/basicevent1`
+            * `/eventservice.xml`
+            * `/toggleLight`
