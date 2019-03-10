@@ -17,6 +17,8 @@ bool _tvState               = LOW;
 bool _tvPreviousState       = LOW;
 bool _tvDrawerState         = LOW;
 bool _tvDrawerPreviousState = LOW;
+bool _allState              = LOW;
+bool _allPreviousState      = LOW;
 
 /** @brief General setup of the node.
  * 
@@ -64,7 +66,7 @@ void loop()
     }
     else
     {
-      _tvLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);      
+      _tvLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
     }    
   }
 
@@ -76,9 +78,15 @@ void loop()
     }
     else
     {
-      _tvDrawerLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);      
+      _tvDrawerLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
     }    
   }
+
+  /*if (_allState != _allPreviousState)
+  {
+    _tvLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+    _tvDrawerLedController.fadeOut(LIGHT_YELLOW_R, LIGHT_YELLOW_G, LIGHT_YELLOW_B);
+  }*/
 
   delay(10);
 }

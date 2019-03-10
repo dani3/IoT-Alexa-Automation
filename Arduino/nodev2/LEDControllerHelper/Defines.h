@@ -5,6 +5,7 @@
 #define TV_LED_STRIP_PIN            3
 #define TV_DRAWER_LED_STRIP_INPUT   4
 #define TV_DRAWER_LED_STRIP_PIN     5
+#define TV_ALL_INPUT                6
 
 // Colours
 #define LIGHT_YELLOW_R      0xFF

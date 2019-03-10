@@ -250,6 +250,7 @@ void loop()
 
     // Check if it's a command for the controller.
     _tvLedController->serverLoop();
+    _tvDrawerLedController->serverLoop();
   }
   else
   {
@@ -280,8 +281,6 @@ void loop()
 
         _upnpBroadcastResponder.addDevice(*_tvLedController);
         _upnpBroadcastResponder.addDevice(*_tvDrawerLedController);
-
-        _upnpBroadcastResponder.addDevice(*_tvLedController);
 
         _controllersInitialized = true;
       }

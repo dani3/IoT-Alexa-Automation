@@ -255,6 +255,10 @@ void Wemo::respondToSearch(IPAddress& senderIP, unsigned int senderPort)
   yield();      
 
   #ifdef DEBUG
+    Serial.println(response);
+  #endif
+
+  #ifdef DEBUG
     Serial.println("Response sent.\n");
   #endif
 }
