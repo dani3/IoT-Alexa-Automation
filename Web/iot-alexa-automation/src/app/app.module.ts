@@ -16,4 +16,5 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
   providers: [],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }
