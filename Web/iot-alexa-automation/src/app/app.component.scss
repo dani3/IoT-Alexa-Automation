@@ -3,32 +3,15 @@
 html,
 body,
 header,
-#intro-section,
- {
+#intro-section
+{
   height: 100vh !important;
+  width: 100%;
 }
 
-@media (max-width: 740px) {
-  html,
-  body,
-  header,
-  #intro-section {
-    min-height: 100vh;
-  }
-}
-
-.top-nav-collapse {
-  background-color: #563e91 !important;
-}
-
-.navbar:not(.top-nav-collapse) {
-  background: transparent !important;
-}
-
-@media (max-width: 991px) {
-  .navbar:not(.top-nav-collapse) {
-    background: #563e91 !important;
-  }
+.footer-row
+{
+  width: 100%;
 }
 
 .rgba-gradient {
