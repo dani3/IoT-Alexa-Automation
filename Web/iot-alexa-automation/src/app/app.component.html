@@ -13,20 +13,21 @@
     <div class="mask rgba-gradient d-flex justify-content-center align-items-center">
 
       <!-- Content -->
-      <div class="container-fluid">
+      <div class="container-fluid" style="overflow-y: scroll; height:800px;">
 
-        <!--Section heading-->
-        <h2 class="display-3 font-weight-bold text-center text-white pb-5">Good morning, Dani!</h2>
+        <div class="row justify-content-center align-items-center py-5">
+          <h1 class="display-4 font-weight-bold text-white mx-5">Good morning, Dani!</h1>
 
-        <div class="row justify-content-center align-items-center">
-
-          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
+          <div class="col-md-3 white-text text-center text-md-left mx-5">
             <h1 class="display-1 my-0 hour">{{ now | date:'HH'}}</h1>
             <h1 class="display-1 my-0 cyan-text">{{ now | date:'mm'}}</h1>
             <h3 class="mb-3">{{ now | date:'fullDate'}}</h3>
           </div>
+        </div>
 
-          <div class="col-md-1 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleFootLamp()">
+        <div class="row justify-content-center align-items-center">
+
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleFootLamp()">
             <mdb-card>
               <h6 class="my-3 mx-3">Foot lamp</h6>
               <mdb-card-body class="text-center">
@@ -35,7 +36,7 @@
             </mdb-card>
           </div>
 
-          <div class="col-md-1 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleAmbilight()">
             <mdb-card>
               <h6 class="my-3 mx-3">Ambilight</h6>
               <mdb-card-body class="text-center">

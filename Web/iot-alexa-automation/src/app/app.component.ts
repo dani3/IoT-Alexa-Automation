@@ -22,4 +22,10 @@ export class AppComponent {
       console.log(data);
     });
   }
+
+  toggleAmbilight() {
+    this.http.get<any>('http://192.168.1.5/toggleLight').subscribe(data => {
+      console.log(data);
+    });
+  }
 }

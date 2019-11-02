@@ -9,6 +9,17 @@ header,
   width: 100%;
 }
 
+.container-fluid
+{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.container-fluid::-webkit-scrollbar
+{
+    display: none;
+}
+
 .footer-row
 {
   width: 100%;
