@@ -21,26 +21,28 @@
         <div class="row justify-content-center align-items-center">
 
           <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
-            <h1 class="display-4 font-weight-bold">Lorem ipsum</h1>
-            <hr class="hr-light">
-            <h6 class="mb-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem repellendus quasi
-              fuga
-              nesciunt dolorum nulla magnam veniam sapiente, fugiat! Commodi sequi non animi ea
-              dolor molestiae, quisquam iste.</h6>
-            <a mdbBtn color="white" outline="true" mdbWavesEffect>Learn more</a>
+            <h1 class="display-1 my-0 hour">{{ now | date:'HH'}}</h1>
+            <h1 class="display-1 my-0 cyan-text">{{ now | date:'mm'}}</h1>
+            <h3 class="mb-3">{{ now | date:'fullDate'}}</h3>
           </div>
 
-
-          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
-            <h1 class="display-4 font-weight-bold">Lorem ipsum</h1>
-            <hr class="hr-light">
-            <h6 class="mb-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem repellendus quasi
-              fuga
-              nesciunt dolorum nulla magnam veniam sapiente, fugiat! Commodi sequi non animi ea
-              dolor molestiae, quisquam iste.</h6>
-            <a mdbBtn color="white" outline="true" mdbWavesEffect>Learn more</a>
+          <div class="col-md-1 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleFootLamp()">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Foot lamp</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon far icon="lightbulb" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
           </div>
 
+          <div class="col-md-1 mb-5 mt-md-0 mt-5 white-text text-center text-md-left">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Ambilight</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon fas icon="tv" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
+          </div>
 
         </div>
 

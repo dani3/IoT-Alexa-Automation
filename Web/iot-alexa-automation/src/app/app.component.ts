@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,17 @@ import { Component } from '@angular/core';
 
 export class AppComponent {
   title = 'IoT Alexa Automation';
+  now = new Date();
+
+  constructor(private http: HttpClient) {
+    setInterval(() => {
+      this.now = new Date();
+    }, 1);
+  }
+
+  toggleFootLamp() {
+    this.http.get<any>('http://192.168.1.4/toggleLight').subscribe(data => {
+      console.log(data);
+    });
+  }
 }
