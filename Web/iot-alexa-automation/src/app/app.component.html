@@ -1,0 +1,86 @@
+<!-- Main navigation -->
+<header>
+
+  <!-- Full Page Intro -->
+  <div id="intro-section" class="view">
+
+    <video class="video-intro" poster="https://mdbootstrap.com/img/Photos/Others/background.jpg" playsinline autoplay
+      muted loop>
+      <source src="https://mdbootstrap.com/img/video/animation.mp4" type="video/mp4">
+    </video>
+
+    <!-- Mask & flexbox options-->
+    <div class="mask rgba-gradient d-flex justify-content-center align-items-center">
+
+      <!-- Content -->
+      <div class="container-fluid" style="overflow-y: scroll; height:800px;">
+
+        <div class="row justify-content-center py-5">
+          <h1 class="display-4 text-white mx-5">Good morning, Dani!</h1>
+
+          <div class="col-md-3 white-text text-md-left mx-5">
+            <h1 class="display-1 hour">{{ now | date:'HH'}}</h1>
+            <h1 class="display-1 cyan-text">{{ now | date:'mm'}}</h1>
+            <h5>{{ now | date:'EEEE'}}</h5>
+            <div class="row">
+              <h5 class="ml-5" style="vertical-align: bottom; line-height: 35px;">{{ now | date:'MMMM'}}</h5>
+              <h1 class="display-5 ml-1" style="vertical-align: bottom; line-height: 35px;">{{ now | date:'dd'}}</h1>
+              <h5 class="ml-1" style="vertical-align: bottom; line-height: 35px;">, {{ now | date:'yyyy'}}</h5>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center align-items-center">
+
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleFootLamp()">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Foot lamp</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon far icon="lightbulb" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
+          </div>
+
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleAmbilight()">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Ambilight</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon fas icon="tv" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
+          </div>
+
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleAmbientLights()">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Ambient lights</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon fas icon="moon" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
+          </div>
+
+        </div>
+
+      </div>
+      <!-- Content -->
+
+    </div>
+    <!-- Mask & flexbox options-->
+
+  </div>
+  <!-- Full Page Intro -->
+
+</header>
+<!-- Main navigation -->
+
+<!-- Footer -->
+<footer class="page-footer font-small fixed-bottom">
+
+  <div class="footer-copyright text-center py-3">GitHub:
+    <a href="https://github.com/dani3/IoT-Alexa-Automation"> dani3/IoT-Alexa-Automation</a>
+    <mdb-icon fab icon="github" class="white-text ml-1"></mdb-icon>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->

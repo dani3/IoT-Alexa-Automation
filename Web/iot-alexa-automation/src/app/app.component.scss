@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'caviar';
+  src: url('../assets/fonts/caviar_dreams.ttf');
+}
+
+html,
+body,
+header,
+#intro-section
+{
+  height: 100vh !important;
+  width: 100%;
+
+  font-family: 'caviar', Fallback, sans-serif;
+}
+
+.container-fluid
+{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.container-fluid::-webkit-scrollbar
+{
+    display: none;
+}
+
+.footer-row
+{
+  width: 100%;
+}
+
+.rgba-gradient {
+  background: -moz-linear-gradient(45deg, rgba(213, 15, 61, 0.6), rgba(13, 17, 198, 0.69) 100%);
+  background: -webkit-linear-gradient(45deg, rgba(213, 15, 61, 0.6), rgba(13, 17, 198, 0.69) 100%);
+  background: linear-gradient(45deg, rgba(213, 15, 61, 0.6), rgba(13, 17, 198, 0.69) 100%);
+}
+
+.view.mask {
+  overflow: auto !important;
+}
+
+.hour
+{
+  margin-bottom: -2rem !important;
+}
+
+mdb-card
+{
+  background-color: #00000011;
+}

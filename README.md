@@ -46,7 +46,7 @@ The idea is to have an ESP8266 controlling each individual device that will rece
   * Wemos attached:
     * TV LEDs controller
       * Alexa invoke name: `Ambilight`
-      * Port: 80
+      * Port: `80`
       * Endpoints:
         * `/setup.xml`
         * `/upnp/control/basicevent1`
@@ -55,7 +55,7 @@ The idea is to have an ESP8266 controlling each individual device that will rece
 
     * Ambient lights controller
       * Alexa invoke name: `Ambient lights`
-      * Port: 81
+      * Port: `81`
       * Endpoints:
         * `/setup.xml`
         * `/upnp/control/basicevent1`

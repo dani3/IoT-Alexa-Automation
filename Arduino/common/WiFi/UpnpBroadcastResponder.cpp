@@ -14,20 +14,20 @@ char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
 Wemo wemos[MAX_WEMOS] = {};
 int numOfWemos = 0;
- 
-UpnpBroadcastResponder::UpnpBroadcastResponder() {} 
+
+UpnpBroadcastResponder::UpnpBroadcastResponder() {}
 
 UpnpBroadcastResponder::~UpnpBroadcastResponder() {}
- 
-bool UpnpBroadcastResponder::beginUdpMulticast()
+
+bool UpnpBroadcastResponder::BeginUdpMulticast()
 {
   boolean state = false;
-  
+
   #ifdef DEBUG
     Serial.println("Beginning multicast ...");
   #endif
-  
-  if (_UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti)) 
+
+  if (m_UDP.beginMulticast(WiFi.localIP(), ipMulti, portMulti))
   {
     #ifdef DEBUG
       Serial.print("Udp multicast server started at: ");
@@ -44,11 +44,11 @@ bool UpnpBroadcastResponder::beginUdpMulticast()
       Serial.println("Connection failed");
     #endif
   }
-  
+
   return state;
 }
 
-void UpnpBroadcastResponder::addDevice(Wemo& device) 
+void UpnpBroadcastResponder::AddDevice(Wemo& device)
 {
   #ifdef DEBUG
     Serial.print("Adding wemo: ");
@@ -56,50 +56,50 @@ void UpnpBroadcastResponder::addDevice(Wemo& device)
     Serial.print("  Index: ");
     Serial.println(numOfWemos);
   #endif
-  
+
   wemos[numOfWemos++] = device;
 }
 
-void UpnpBroadcastResponder::serverLoop()
+void UpnpBroadcastResponder::ServerLoop()
 {
-  int packetSize = _UDP.parsePacket();
+  int packetSize = m_UDP.parsePacket();
   if (packetSize <= 0)
   {
     return;
   }
-  
-  IPAddress senderIP = _UDP.remoteIP();
-  unsigned int senderPort = _UDP.remotePort();
-  
+
+  IPAddress senderIP = m_UDP.remoteIP();
+  unsigned int senderPort = m_UDP.remotePort();
+
   // Read the packet into the buffer
-  _UDP.read(packetBuffer, packetSize);
-  
+  m_UDP.read(packetBuffer, packetSize);
+
   // Check if this is a M-SEARCH for WeMo device
   String request = String((char *) packetBuffer);
 
-  if (request.indexOf("M-SEARCH") >= 0) 
+  if (request.indexOf("M-SEARCH") >= 0)
   {
-    if ((request.indexOf("urn:Belkin:device:**") > 0) || (request.indexOf("ssdp:all") > 0) || (request.indexOf("upnp:rootdevice") > 0)) 
-    {      
+    if ((request.indexOf("urn:Belkin:device:**") > 0) || (request.indexOf("ssdp:all") > 0) || (request.indexOf("upnp:rootdevice") > 0))
+    {
       Utils::quickLEDFlashing(ONCE);
 
       #ifdef DEBUG
         Serial.println("Got _UDP Belkin Request ...");
       #endif
-    
-      for (int n = 0; n < numOfWemos; n++) 
-      {
-        Wemo &sw = wemos[n];
 
-        if (&sw != NULL) 
+      for (int n = 0; n < numOfWemos; n++)
+      {
+        Wemo& sw = wemos[n];
+
+        if (&sw != NULL)
         {
           #ifdef DEBUG
             Serial.print("Device ");
             Serial.print(n);
             Serial.println(" responding ...");
           #endif
-          
-          sw.respondToSearch(senderIP, senderPort);              
+
+          sw.respondToSearch(senderIP, senderPort);
         }
       }
     }
