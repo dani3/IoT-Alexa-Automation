@@ -18,13 +18,19 @@ export class AppComponent {
   }
 
   toggleFootLamp() {
-    this.http.get<any>('http://192.168.1.4/toggleLight').subscribe(data => {
+    this.http.get<any>('http://192.168.1.4:80/toggleLight').subscribe(data => {
       console.log(data);
     });
   }
 
   toggleAmbilight() {
-    this.http.get<any>('http://192.168.1.5/toggleLight').subscribe(data => {
+    this.http.get<any>('http://192.168.1.5:80/toggleLight').subscribe(data => {
+      console.log(data);
+    });
+  }
+
+  toggleAmbientLights() {
+    this.http.get<any>('http://192.168.1.5:81/toggleLight').subscribe(data => {
       console.log(data);
     });
   }

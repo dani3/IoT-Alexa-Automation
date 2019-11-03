@@ -18,11 +18,15 @@
         <div class="row justify-content-center py-5">
           <h1 class="display-4 text-white mx-5">Good morning, Dani!</h1>
 
-          <div class="col-md-3 white-text text-center text-md-left mx-5">
+          <div class="col-md-3 white-text text-md-left mx-5">
             <h1 class="display-1 hour">{{ now | date:'HH'}}</h1>
             <h1 class="display-1 cyan-text">{{ now | date:'mm'}}</h1>
             <h5>{{ now | date:'EEEE'}}</h5>
-            <h3 class="ml-5">{{ now | date:'longDate'}}</h3>
+            <div class="row">
+              <h5 class="ml-5" style="vertical-align: bottom; line-height: 35px;">{{ now | date:'MMMM'}}</h5>
+              <h1 class="display-5 ml-1" style="vertical-align: bottom; line-height: 35px;">{{ now | date:'dd'}}</h1>
+              <h5 class="ml-1" style="vertical-align: bottom; line-height: 35px;">, {{ now | date:'yyyy'}}</h5>
+            </div>
           </div>
         </div>
 
@@ -42,6 +46,15 @@
               <h6 class="my-3 mx-3">Ambilight</h6>
               <mdb-card-body class="text-center">
                 <mdb-icon fas icon="tv" class="white-text my-4" size="6x"></mdb-icon>
+              </mdb-card-body>
+            </mdb-card>
+          </div>
+
+          <div class="col-md-2 mb-5 mt-md-0 mt-5 white-text text-center text-md-left" (click)="toggleAmbientLights()">
+            <mdb-card>
+              <h6 class="my-3 mx-3">Ambient lights</h6>
+              <mdb-card-body class="text-center">
+                <mdb-icon fas icon="moon" class="white-text my-4" size="6x"></mdb-icon>
               </mdb-card-body>
             </mdb-card>
           </div>
