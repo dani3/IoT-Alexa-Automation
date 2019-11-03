@@ -2,50 +2,83 @@ package com.danim.iotalexa.Fragments;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.widget.ImageView;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.danim.iotalexa.Beans.LivingRoomStatus;
-import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Helpers.Utils;
 import com.danim.iotalexa.R;
-import com.danim.iotalexa.Singletons.VolleySingleton;
+import com.db.chart.animation.Animation;
+import com.db.chart.model.LineSet;
+import com.db.chart.renderer.AxisRenderer;
+import com.db.chart.util.Tools;
+import com.db.chart.view.LineChartView;
 
+import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class LivingRoomFragment extends android.support.v4.app.Fragment
 {
-    private AtomicInteger mDevicesConnected;
-    private AtomicBoolean mErrorWithDevice;
+    private final int FIRST = 4;
+    private final int LAST  = 52;
+    private final String[] mTemperatureLabels =
+            {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+
+    private final float[][] mTemperatureValues =
+            {{ 20.f, 20.f, 20.f, 20.f,
+                    22.2f, 22.1f, 22.f, 21.8f, 21.2f, 21.2f, 21.6f, 21.2f, 21.8f, 22.5f, 22.2f, 22.3f,
+                    22.2f, 22.5f, 22.f, 21.8f, 21.2f, 21.2f, 21.6f, 21.2f, 21.1f, 20.5f, 19.9f, 19.8f,
+                    19.2f, 19.5f, 19.8f, 20.f, 20.2f, 19.8f, 20.2f, 20.9f, 21.1f, 21.5f, 21.9f, 21.2f,
+                    22.2f, 22.7f, 22.f, 21.8f, 21.2f, 21.2f, 21.6f, 21.2f, 21.1f, 20.5f, 19.9f, 19.8f,
+               20.f, 20.f, 20.f, 20.f },
+             { 20.f, 20.f, 20.f, 20.f,
+                    20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f,
+                    20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f,
+                    20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f,
+                    20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f, 20.f,
+               20.f, 20.f, 20.f, 20.f }};
+
+    private final String[] mHumidityLabels =
+            {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+
+    private final float[][] mHumidityValues =
+            {{ 20, 20, 20, 20,
+                    22, 23, 24, 28, 26, 30, 30, 30, 27, 28, 26, 25,
+                    22, 22, 22, 22, 24, 28, 26, 30, 25, 25, 24, 27,
+                    22, 24, 22, 22, 28, 28, 23, 26, 23, 24, 27, 27,
+                    22, 22, 22, 22, 24, 28, 23, 24, 27, 24, 26, 30,
+               20, 20, 20, 20 },
+             { 20, 20, 20, 20,
+                    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+               20, 20, 20, 20 }};
 
     private LivingRoomStatus mLivingRoomStatus;
 
-    private ScaleAnimation mPulseAnimation;
+    private LineChartView mTemperatureChart;
+    private LineChartView mHumidityChart;
+    private Animation mTemperatureChartAnimation;
+    private Animation mHumidityChartAnimation;
 
     private TextView mTemperatureTextView;
     private TextView mTemperatureStateTextView;
     private TextView mHumidityTextView;
-    private ImageView mFootLampImageView;
-    private ImageView mAmbilightImageView;
     private ProgressBar mTemperatureProgressBar;
 
     private View mContainer;
@@ -55,9 +88,6 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     public LivingRoomFragment()
     {
         mLivingRoomStatus = new LivingRoomStatus();
-
-        mDevicesConnected = new AtomicInteger(0);
-        mErrorWithDevice  = new AtomicBoolean(false);
     }
 
     /**
@@ -74,47 +104,27 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View footLampContainer  = fragment.findViewById(R.id.living_room_foot_lamp_container);
-        View ambilightContainer = fragment.findViewById(R.id.living_room_ambilight_container);
-
         mTemperatureTextView      = fragment.findViewById(R.id.living_room_temperature);
         mTemperatureStateTextView = fragment.findViewById(R.id.living_room_temperature_state);
         mHumidityTextView         = fragment.findViewById(R.id.living_room_humidity);
-        mFootLampImageView        = fragment.findViewById(R.id.living_room_foot_lamp_image);
-        mAmbilightImageView       = fragment.findViewById(R.id.living_room_ambilight_image);
         mTemperatureProgressBar   = fragment.findViewById(R.id.living_room_temperature_progress);
         mContainer                = fragment.findViewById(R.id.living_room_container);
         mLoadingView              = fragment.findViewById(R.id.living_room_loading);
         mErrorTextView            = fragment.findViewById(R.id.living_room_error);
+        mTemperatureChart         = fragment.findViewById(R.id.temperature_chart);
+        mHumidityChart            = fragment.findViewById(R.id.humidity_chart);
 
         mContainer.setVisibility(View.INVISIBLE);
         mErrorTextView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.VISIBLE);
 
-        footLampContainer.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                _toggleLamp(mFootLampImageView, Constants.NODEV1_IP);
-            }
-        });
+        mTemperatureChartAnimation = new Animation();
+        mTemperatureChartAnimation.setDuration(375);
+        mTemperatureChartAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
 
-        ambilightContainer.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                _toggleLamp(mAmbilightImageView, Constants.NODEV2_IP);
-            }
-        });
-
-        mPulseAnimation = new ScaleAnimation(
-                1.f, 1.2f, 1.f, 1.2f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-
-        mPulseAnimation.setDuration(310);
-        mPulseAnimation.setRepeatCount(Animation.INFINITE);
-        mPulseAnimation.setRepeatMode(Animation.REVERSE);
+        mHumidityChartAnimation = new Animation();
+        mHumidityChartAnimation.setDuration(375);
+        mHumidityChartAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
 
         return fragment;
     }
@@ -124,15 +134,10 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     {
         super.onActivityCreated(savedInstanceState);
 
-        mErrorWithDevice.set(false);
-
         mLivingRoomStatus.setTemperature(22.5f);
         mLivingRoomStatus.setHumidity(34);
 
-        if (mDevicesConnected.incrementAndGet() == Constants.LIVING_ROOM_NUMBER_DEVICES)
-        {
-            _initializeViews();
-        }
+        _initializeViews();
     }
 
     /**
@@ -141,71 +146,125 @@ public class LivingRoomFragment extends android.support.v4.app.Fragment
     @SuppressLint("SetTextI18n")
     private void _initializeViews()
     {
-        if (!mErrorWithDevice.get())
-        {
-            mContainer.setVisibility(View.VISIBLE);
-            mErrorTextView.setVisibility(View.INVISIBLE);
-            mLoadingView.setVisibility(View.INVISIBLE);
+        mContainer.setVisibility(View.VISIBLE);
+        mErrorTextView.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.INVISIBLE);
 
-            mTemperatureTextView.setText(
-                    String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
-            mHumidityTextView.setText(
-                    Integer.toString(mLivingRoomStatus.getHumidity()));
-            mTemperatureStateTextView.setText(
-                    Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
-            mTemperatureProgressBar.setProgress(
-                    Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), false);
+        mTemperatureTextView.setText(
+                String.format(Locale.US, "%.1f", mLivingRoomStatus.getTemperature()));
+        mHumidityTextView.setText(
+                Integer.toString(mLivingRoomStatus.getHumidity()));
+        mTemperatureStateTextView.setText(
+                Utils.getTemperatureState(mLivingRoomStatus.getTemperature()));
+        mTemperatureProgressBar.setProgress(
+                Utils.normalizeTemperature(mLivingRoomStatus.getTemperature()), false);
 
-            mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
-        }
-        else
-        {
-            mContainer.setVisibility(View.INVISIBLE);
-            mErrorTextView.setVisibility(View.VISIBLE);
-            mLoadingView.setVisibility(View.INVISIBLE);
-        }
+        mTemperatureStateTextView.setTextColor(Color.parseColor(Utils.getTemperatureColor(mLivingRoomStatus.getTemperature())));
+
+        _initializeTemperatureChart();
+        _initializeHumidityChart();
     }
 
-    /**
-     * Function to toggle a device on or off.
-     */
-    private void _toggleLamp(final ImageView device, final String deviceIp)
+    private void _initializeTemperatureChart()
     {
-        String url = deviceIp + Constants.TOGGLE_LIGHT;
+        // Display the hours on the x-axis
+        Calendar calendar = Calendar.getInstance();
+        int currentHour   = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
 
-        Log.d(Constants.TAG, "Connecting to: " + url);
+        currentHour = (currentMinute < 30) ? currentHour - 1 : currentHour;
 
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>()
-        {
-            @Override
-            public void onResponse(String response)
-            {
-                mPulseAnimation.cancel();
-                mPulseAnimation.reset();
+        mTemperatureLabels[LAST - 6]      = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
+        mTemperatureLabels[LAST - 6 - 18] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
+        mTemperatureLabels[LAST - 6 - 37] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
 
-                YoYo.with(Techniques.Tada)
-                    .duration(750)
-                    .playOn(device);
-            }
-        }
-        , new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                Log.e(Constants.TAG, "Error connecting: " + error.getMessage());
+        // Set the data
+        LineSet dataset = new LineSet(mTemperatureLabels, mTemperatureValues[0]);
+        dataset.setColor(getResources().getColor(R.color.colorAccentDarkPurple, getResources().newTheme()))
+               .setThickness(Tools.fromDpToPx(3))
+               .setSmooth(true)
+               .beginAt(FIRST)
+               .endAt(LAST);
 
-                mPulseAnimation.cancel();
-                mPulseAnimation.reset();
+        mTemperatureChart.addData(dataset);
 
-                YoYo.with(Techniques.Shake)
-                    .duration(375)
-                    .playOn(device);
-            }
-        });
+        // Threshold line
+        Paint thresPaint = new Paint();
+        thresPaint.setColor(Color.parseColor("#0079ae"));
+        thresPaint.setStyle(Paint.Style.STROKE);
+        thresPaint.setAntiAlias(true);
+        thresPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
+        thresPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
 
-        device.startAnimation(mPulseAnimation);
+        // Grid lines
+        Paint gridPaint = new Paint();
+        gridPaint.setColor(Color.parseColor("#cccccc"));
+        gridPaint.setStyle(Paint.Style.STROKE);
+        gridPaint.setAntiAlias(true);
+        gridPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
 
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+        // No decimals
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(0);
+
+        mTemperatureChart.setXLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                         .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                         .setAxisLabelsSpacing(20)
+                         .setLabelsFormat(decimalFormat)
+                         .setGrid(0, 3, gridPaint)
+                         .setValueThreshold(21f, 21f, thresPaint)
+                         .setAxisBorderValues(15, 30)
+                         .show(mTemperatureChartAnimation);
+    }
+
+    private void _initializeHumidityChart()
+    {
+        Calendar calendar = Calendar.getInstance();
+        int currentHour   = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        currentHour = (currentMinute < 30) ? currentHour - 1 : currentHour;
+
+        mHumidityLabels[LAST - 6]      = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
+        mHumidityLabels[LAST - 6 - 18] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
+        currentHour = (currentHour - 10 < 0) ? 24 - 10 + currentHour : currentHour - 10;
+        mHumidityLabels[LAST - 6 - 37] = ((currentHour < 10) ? "0" : "") + Integer.toString(currentHour) + ":00";
+
+        LineSet dataset = new LineSet(mHumidityLabels, mHumidityValues[0]);
+        dataset.setColor(getResources().getColor(R.color.colorAccentDarkPurple, getResources().newTheme()))
+                .setThickness(Tools.fromDpToPx(3))
+                .setSmooth(true)
+                .beginAt(FIRST)
+                .endAt(LAST);
+
+        mHumidityChart.addData(dataset);
+
+        Paint thresPaint = new Paint();
+        thresPaint.setColor(Color.parseColor("#0079ae"));
+        thresPaint.setStyle(Paint.Style.STROKE);
+        thresPaint.setAntiAlias(true);
+        thresPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
+        thresPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
+
+        Paint gridPaint = new Paint();
+        gridPaint.setColor(Color.parseColor("#cccccc"));
+        gridPaint.setStyle(Paint.Style.STROKE);
+        gridPaint.setAntiAlias(true);
+        gridPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
+
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(0);
+
+        mHumidityChart.setXLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                      .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+                      .setAxisLabelsSpacing(20)
+                      .setLabelsFormat(decimalFormat)
+                      .setGrid(0, 3, gridPaint)
+                      .setValueThreshold(35, 35, thresPaint)
+                      .setAxisBorderValues(0, 100)
+                      .show(mHumidityChartAnimation);
     }
 }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.danim.iotalexa.Constants.Constants;
 import com.danim.iotalexa.Fragments.LivingRoomFragment;
+import com.danim.iotalexa.Fragments.MyDevicesFragment;
 import com.danim.iotalexa.Helpers.PermissionsHelper;
 import com.danim.iotalexa.Helpers.WeatherHelper;
 
@@ -127,14 +128,20 @@ public class MainActivity extends AppCompatActivity
         {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return LivingRoomFragment.newInstance();
+            if (position == 0)
+            {
+                return LivingRoomFragment.newInstance();
+            }
+            else
+            {
+                return MyDevicesFragment.newInstance();
+            }
         }
 
         @Override
         public int getCount()
         {
-            // Show 3 total pages.
-            return 1;
+            return 2;
         }
     }
 }

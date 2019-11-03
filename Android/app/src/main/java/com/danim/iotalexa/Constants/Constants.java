@@ -20,8 +20,7 @@ public class Constants
     public static final String NODEV2_IP = "http://192.168.1.5";
 
     public static final String TOGGLE_LIGHT  = "/toggleLight";
-
-    public static final short LIVING_ROOM_NUMBER_DEVICES = 1;
+    public static final String ROOT          = "/";
 
     public enum TEMPERATURE_STATES
     {
