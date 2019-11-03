@@ -16,12 +16,13 @@
       <div class="container-fluid" style="overflow-y: scroll; height:800px;">
 
         <div class="row justify-content-center py-5">
-          <h1 class="display-4 font-weight-bold text-white mx-5">Good morning, Dani!</h1>
+          <h1 class="display-4 text-white mx-5">Good morning, Dani!</h1>
 
           <div class="col-md-3 white-text text-center text-md-left mx-5">
-            <h1 class="display-1 my-0 hour">{{ now | date:'HH'}}</h1>
-            <h1 class="display-1 my-0 cyan-text">{{ now | date:'mm'}}</h1>
-            <h3 class="mb-3">{{ now | date:'fullDate'}}</h3>
+            <h1 class="display-1 hour">{{ now | date:'HH'}}</h1>
+            <h1 class="display-1 cyan-text">{{ now | date:'mm'}}</h1>
+            <h5>{{ now | date:'EEEE'}}</h5>
+            <h3 class="ml-5">{{ now | date:'longDate'}}</h3>
           </div>
         </div>
 
