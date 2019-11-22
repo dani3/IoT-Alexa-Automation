@@ -11,10 +11,24 @@ export class AppComponent {
   title = 'IoT Alexa Automation';
   now = new Date();
 
+  message = "Good morning, Dani!"
+
   constructor(private http: HttpClient) {
     setInterval(() => {
       this.now = new Date();
     }, 1);
+
+    setInterval(() => {
+      let hour = this.now.getHours();
+      if (hour >= 6 && hour <= 12) {
+        this.message = "Good morning, Dani!"
+      } else if (hour > 12 && hour <= 19) {
+        this.message = "Good afternoon, Dani!"
+      } else {
+        this.message = "Good evening, Dani!"
+      }
+
+    }, 20 * 60)
   }
 
   toggleFootLamp() {
